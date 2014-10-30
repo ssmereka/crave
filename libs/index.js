@@ -1,7 +1,39 @@
 var fs = require('fs');
 
-var debug = false;
-var routeTypeIdentifier = "~>";
+
+/* ************************************************** *
+ * ******************** Constructor
+ * ************************************************** */
+
+var Crave = function(config) {
+  handleCraveConfig(config);
+}
+
+
+/* ************************************************** *
+ * ******************** Config Variables & Methods
+ * ************************************************** */
+
+var debug = false,
+    routeTypeIdentifier = "~>";
+
+var handleCraveConfig = function(config) {
+  if(config) {
+    
+    if(config.identifier) {
+      routeTypeIdentifier = config.identifier;
+    }
+
+    if(config.debug) {
+      debug = config.debug;
+    }
+  }
+}
+
+
+/* ************************************************** *
+ * ******************** Logging
+ * ************************************************** */
 
 /**
  * Logs messages, if debug is enabled.
@@ -12,6 +44,11 @@ var log =  function(msg) {
     console.log(msg);
   }
 };
+
+
+/* ************************************************** *
+ * ******************** Private Methods
+ * ************************************************** */
 
 /**
  * Find all the files in a given directory and its subdirectories.  Perform an action
@@ -196,4 +233,13 @@ var requireTypesInFolder = function(_folder, _types, _next) {
   });
 };
 
-exports.directory = requireTypesInFolder;
+
+/* ************************************************** *
+ * ******************** Public API
+ * ************************************************** */
+
+Crave.prototype.directory = requireTypesInFolder;
+Crave.prototype.setConfig = handleCraveConfig;
+
+exports = module.exports = new Crave();
+exports = Crave;
