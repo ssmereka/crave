@@ -99,6 +99,31 @@ var types = [ "controller" ];
 crave.directory(directoryToLoad, types, startServerMethod, app, config);
 ```
 
+# Config
+You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
+
+```javascript
+var crave = require('crave');
+var expres = require(express);
+
+var app = express();
+
+crave.setConfig({
+  debug: true,
+  identifier: "(>^_^)>"
+})
+
+crave.directory("/path/to/directory", [ "controller" ], function(err) { console.log(err || "success"), app);
+```
+
+The available properties are:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| **debug** | Boolean | false | When true, Crave will display log messages. |
+| **identifier** | String | "~>" | Specifies the string used to indicate the following text is a Crave type. |
+
+
 # Documentation
 
 Further documentation can be found in the [wiki](https://github.com/ssmereka/crave/wiki).
