@@ -6,10 +6,10 @@ Locate and require node components (controllers, models, etc) dynamically within
 
 # Getting Started
 
-Install Crave using npm
+Install crave using npm and save it as a dependancy in your package.json.
 
 ```javascript
-npm install crave
+npm install crave --save
 ```
 
 You can require Crave just like every other node.js module.
