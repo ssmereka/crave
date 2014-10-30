@@ -2,31 +2,17 @@
 
 Locate and require node components (controllers, models, etc) dynamically within your application.
 
-Crave allows you to structure a server's files how you want without the extra burden of manually requiring files.  For example, you may have this common file structure:
+Crave gives you the ability to structure a server's files any way you like without the extra burden of manually requiring files.  For example, you may have this common file structure:
 
-```
-/app/controllers/user_controller.js
-/app/controllers/device_controller.js
+![Common Folder Structure](http://i.imgur.com/713xT0E.png) 
 
-/app/models/user_model.js
-/app/models/device_model.js
+Typically a server would require all the files in the models directory and then the controller directory.  This works great, but also restricts how you can organize your files.
 
-/app/test/user_test.js
-/app/test/device_test.js
-```
+Using Crave, you could restructure the files to look like this:
 
-Which, using Crave, could be restructured to look like this:
+![Crave Folder Structure](http://i.imgur.com/QrKzzXp.png)
 
-```
-/app/user/user_controller.js
-/app/user/user_model.js
-/app/user/user_test.js
-
-/app/device/device_controller.js
-/app/device/device_model.js
-/app/device/device_test.js
-```
-This new file structure groups the server's features so they are portable from one project to another.  In addition, debugging and development becomes easier because you are no longer hunting down files that may interact with one another.
+The grouping of files by features gives a few benefit of treating each folder as a module, increasing portability and maintainability. 
 
 **Current Status:** In Development.
 
