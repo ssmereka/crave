@@ -9,13 +9,13 @@ Locate and require node components (controllers, models, etc) dynamically within
 Install Crave using npm
 
 ```javascript
-    npm install crave
+npm install crave
 ```
 
 You can require Crave just like every other node.js module.
 
 ```javascript
-    var crave = require('crave');
+var crave = require('crave');
 ```
 
 Controllers, modules, and other files you wish to require before starting your server should be structured like this:
