@@ -89,7 +89,7 @@ var walkAsync = function(directory, action, cb) {
       if(isFileInvalid(file)) {
         log("\tSkipping: " + directory + "/" + file);
         pending--;
-        return;
+        return cb(null, true);
       }
 
       // Add a trailing / and file to the directory we are in.
