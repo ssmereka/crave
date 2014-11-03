@@ -1,5 +1,11 @@
-var crave = require('crave'),
-    express = require('express'),
+// Load crave from the repository.
+var crave = require('../../libs/index.js');
+// or
+// Load crave from an installed npm module
+// var crave = require('crave');
+
+
+var express = require('express'),
     mongoose = require('mongoose'),
     path = require('path');
 
@@ -22,8 +28,10 @@ var connect = function(callback) {
 }
 
 // Method to connect to database and start the server.
-var start = function(err) {
+var start = function(err, files) {
   if(err) return console.log(err);
+
+  console.log(files);
 
   connect(function(err) {
     if(err) return console.log(err);
@@ -35,7 +43,7 @@ var start = function(err) {
       console.log("Listening on http://%s:%s", address, serverInfo.port);
     });
   });
-}
+};
 
 // Folder to load (aka require) files from recursively. 
 var folderToLoad = path.resolve("./app");

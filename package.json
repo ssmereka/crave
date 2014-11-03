@@ -6,13 +6,15 @@
     "url": "http://github.com/ssmereka/crave/issues"
   },
   "contributors": [],
-  "dependencies": {},
+  "dependencies": {
+    "mkdirp": "^0.5.0"
+  },
   "description": "",
   "devDependencies": {},
   "engines": {
     "node": ">=0.10"
   },
-  "keywords":[
+  "keywords": [
     "load",
     "require",
     "dynamic",
