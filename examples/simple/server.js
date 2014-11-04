@@ -31,7 +31,7 @@ var connect = function(callback) {
 var start = function(err, files) {
   if(err) return console.log(err);
 
-  console.log(files);
+  //console.log(files);
 
   connect(function(err) {
     if(err) return console.log(err);

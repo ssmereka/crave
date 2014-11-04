@@ -51,7 +51,7 @@ var defaultConfig = {
     enable: true,                                         // When true, the files you require are stored to disk to increase performance.
     path: path.resolve(__dirname, "../data/cache.json")   // Path to the file used to store the cache.
   },
-  debug: true,                                            // When true, additional logs are displayed.
+  debug: false,                                            // When true, additional logs are displayed.
   identification: {                                       // Variables related to how to find and require files are stored here.
     type: "string",                                       // How to find files.  Available options: 'string', 'filename'
     identifier: "~>"                                      // How to identify the files.
@@ -97,6 +97,7 @@ function mergeObjects(obj1, obj2) {
 var loadCache = function(config, cb) {
   if( ! config.cache || ! config.cache.enable) {
     //return cb(new Error("Load Cache Error:  cache is not enabled."));
+    log.t("\nLoad Cache: Cache only found in memory.\nCache Value: %s\n", JSON.stringify(CACHE, undefined, 2));
     return cb(undefined, CACHE);
   }
 
@@ -105,6 +106,7 @@ var loadCache = function(config, cb) {
   }
 
   if( ! fs.existsSync(config.cache.path)) {
+    log.t("\nLoad Cache: Cache not yet saved to disk, loading from memory.\nCache Value: %s\n", JSON.stringify(CACHE, undefined, 2));
     return cb(undefined, CACHE);
   }
 
@@ -119,6 +121,7 @@ var loadCache = function(config, cb) {
       return cb(err);
     }
 
+    log.t("\nLoad Cache: Loaded from disk.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
     return cb(err, cache);
   });
 };
@@ -135,7 +138,7 @@ var saveCache = function(cache, cb) {
 
   if( ! CONFIG.cache || ! CONFIG.cache.enable) {
     //return cb(new Error("Load Cache Error:  cache is not enabled."));
-    log.t("Save Cache: Updated in memory. \n%s", JSON.stringify(cache, undefined, 2));
+    log.t("\nSave Cache: Updated in memory. \n%s\n", JSON.stringify(cache, undefined, 2));
     return cb(undefined, cache)
   }
 
@@ -143,8 +146,6 @@ var saveCache = function(cache, cb) {
     return cb(new Error("Invalid cache path."));
   }
 
-
-  console.log(CONFIG.cache.path.substring(0, CONFIG.cache.path.lastIndexOf('/')));
   mkdirp(CONFIG.cache.path.substring(0, CONFIG.cache.path.lastIndexOf('/')), function(err) {
     if(err) {
       return cb(err);
@@ -155,7 +156,7 @@ var saveCache = function(cache, cb) {
         return cb(err);
       }
 
-      log.t("Save Cache: Saved to disk\n%s", JSON.stringify(cache, undefined, 2));
+      log.t("Save Cache: Saved to disk\n%s\n", JSON.stringify(cache, undefined, 2));
       cb(undefined, cache);
     });
   });
@@ -169,7 +170,7 @@ var saveCache = function(cache, cb) {
  * @param cb is a callback method where a result and/or error are returned.
  */
 var updateDirectoryInCache = function(cache, directory, files, cb) {
-  log.t("Update Directory In Cache: \t%s \n\tFiles: \t%s", directory, files);
+  log.t("\nUpdate Directory In Cache: \t%s \n\tFiles: \t [ %s ]\n", directory, files);
   for(var i = 0; i < cache.length; i++) {
     if(_cache[i]["directory"] === directory) {
       cache[i] = files;
@@ -384,7 +385,7 @@ var requireTypesInFolder = function(_folder, _types, _next) {
       for(var i = 0; i < types.length; i++) {
 
         // If it contains a route tag, then add it to the list of files to require.
-        if(data.toLowerCase().indexOf(routeTypeIdentifier + " " + types[i]) != -1) {
+        if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
           files[i].push(file);
         }
       }
@@ -424,19 +425,51 @@ var requireTypesInFolder = function(_folder, _types, _next) {
 
 
 var buildDirectoryList = function(directory, types, cb) {
-  log.t("Build Directory List: \n\tDirectory:\t%s\n\tTypes: \t\t[ %s ]", directory, types);
-  var list = [];
+  log.t("Build Directory List: \n\tDirectory:\t%s\n\tTypes: \t\t[ %s ]\n", directory, types);
+  
+  var lists = [];
+  for(var i = 0; i < types.length; i++) {
+    lists[i] = [];
+  };
+
   walkAsync(directory, function(file, cb) {
-    list.push(file);
-    cb();
+    log.t("\tChecking File: %s", file);
+    switch(CONFIG.identification.identify) {
+    default:
+    case 'string':
+      fs.readFile(file, 'utf8', function(err, data) {
+        // Check if the file contains a route tag.
+        for(var i = 0; i < types.length; i++) {
+          // If it contains a route tag, then add it to the list of files to require.
+          if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
+            lists[i].push(file);
+          }
+        }
+        return cb();
+      });
+      break;
+    case 'filename':
+      break;
+  }
+    //list.push(file);
+    //cb();
   }, function(err, success) {
     if(err) {
       return cb(err);
     }
-
+    var list = [];
+    for(var y = 0; y < lists.length; y++) {
+      for(var x = 0; x < lists[y].length; x++) {
+        list.push(lists[y][x]);
+      }
+    }
     updateDirectoryInCache(CACHE, directory, list, cb);
   });
 };
+
+var getFileType = function(file, types, cb) {
+  
+}
 
 /**
  * Attempt to require an ordered list of files and return a list
@@ -445,7 +478,7 @@ var buildDirectoryList = function(directory, types, cb) {
  * @param cb is a callback method where the result and/or error will be returned.
  */
 var requireFiles = function(_list, _cb) {
-  log.t("Require Files: \n\t[ %s ]", _list);
+  log.t("Require Files: \t[ %s ]\n", _list);
   var list = _list,
       cb = _cb;
 
@@ -503,8 +536,6 @@ var loadDirectory = function(_directory, _types, _cb) {
     if(err) {
       return cb(err);
     }
-    console.log("Cache: ");
-    console.log(cache);
 
     if(cache["directory"]) {
       createListFromCache(cache, function (err, files) {
