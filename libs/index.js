@@ -48,13 +48,13 @@ var Crave = function(config) {
  */
 var defaultConfig = {
   cache: {                                                // Values related to caching a list of files to require.
-    enable: true,                                         // When true, the files you require are stored to disk to increase performance.
+    enable: false,                                        // When true, the files you require are stored to disk to increase performance.
     path: path.resolve(__dirname, "../data/cache.json")   // Path to the file used to store the cache.
   },
-  debug: false,                                            // When true, additional logs are displayed.
+  debug: false,                                           // When true, additional logs are displayed.
   identification: {                                       // Variables related to how to find and require files are stored here.
-    type: "string",                                       // How to find files.  Available options: 'string', 'filename'
-    identifier: "~>"                                      // How to identify the files.
+    type: "string",                                     // How to find files.  Available options: 'string', 'filename'
+    identifier: "~>"                                    // How to identify the files.
   }
 };
 
@@ -122,7 +122,7 @@ var loadCache = function(config, cb) {
     }
 
     log.t("\nLoad Cache: Loaded from disk.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
-    return cb(err, cache);
+    return cb(err, cache, true);
   });
 };
 
@@ -157,9 +157,19 @@ var saveCache = function(cache, cb) {
       }
 
       log.t("Save Cache: Saved to disk\n%s\n", JSON.stringify(cache, undefined, 2));
-      cb(undefined, cache);
+      cb(undefined, cache, true);
     });
   });
+};
+
+var clearCache = function(cb) {
+  if(CONFIG.cache && CONFIG.cache.path) {
+    if(fs.exists(CONFIG.cache.path)) {
+      fs.unlinkSync(CONFIG.cache.path);
+    }
+  }
+
+  CACHE = [];
 };
 
 /**
@@ -340,89 +350,6 @@ var isFileInvalid = function(file) {
   return false;
 };
 
-/**
- * Require all files of the given types.  For example:
- * "types = [controller, error]" will load all controller
- * files and then all error files.
- *
- * Note: This function will walk through all the files in
- * the given folder and search each file a few times.
- * This is a lengthy operation so limit the amount of
- * calls to this function.
- */
-var requireTypesInFolder = function(_folder, _types, _next) {
-  var files = {};
-
-  var folder = _folder;
-  var types = _types;
-  var next = _next;
-
-  var _arguments = arguments;
-  var _this = this;
-
-  for(var i = 3; i < Object.keys(_arguments).length; i++) {
-    if(_arguments[i]) {
-      _arguments[i-3] = _arguments[i];
-      delete _arguments[i];
-    }
-  }
-
-  types = (types) ? types : [ "static", "model", "controller", "error", "tracker"];
-
-  // Initialize the files object.
-  for(var i = 0; i < types.length; i++) {
-    files[i] = [];
-  }
-
-  log.d("Selecting folders to load from: ");
-  log.d("\tDirectory: " + folder);
-
-  // Walk through all the files in the directory.
-  walkAsync(folder, function(file, next) {
-    fs.readFile(file, 'utf8', function(err, data) {
-
-      // Check if the file contains a route tag.
-      for(var i = 0; i < types.length; i++) {
-
-        // If it contains a route tag, then add it to the list of files to require.
-        if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
-          files[i].push(file);
-        }
-      }
-      next();
-    });
-  }, function(err, success){
-    if(err || ! success) {
-      next(err || new Error("There was a problem walking through the routes."));
-    }
-
-    // If successful, require all the files in the correct order.
-    log.d("File Paths to Require: ");
-    for(var key in files) {
-      if(files.hasOwnProperty(key)) {
-        files[key].forEach(function (file) {
-          // Don't try to load a folder you can't.
-          if (file === undefined || file === '') {
-            return log.d("Can't require a file with path undefined.");
-          }
-
-          // Make sure there is a '/' at the start of the relative path.
-          file = (file.substring(0, 1) === '/') ? file : '/' + file;
-          if (!fs.existsSync(file)) {
-            log.d("Can't require a file that doesn't exist.");
-            return;
-          }
-
-          log.d("\tRequire: " + file);
-          require(file).apply(_this, _arguments);
-        });
-      }
-    }
-
-    next(undefined, true);
-  });
-};
-
 
 var buildDirectoryList = function(directory, types, cb) {
   log.t("Build Directory List: \n\tDirectory:\t%s\n\tTypes: \t\t[ %s ]\n", directory, types);
@@ -434,25 +361,34 @@ var buildDirectoryList = function(directory, types, cb) {
 
   walkAsync(directory, function(file, cb) {
     log.t("\tChecking File: %s", file);
-    switch(CONFIG.identification.identify) {
-    default:
-    case 'string':
-      fs.readFile(file, 'utf8', function(err, data) {
-        // Check if the file contains a route tag.
+    switch(CONFIG.identification.type) {
+      default:
+      case 'string':
+        fs.readFile(file, 'utf8', function(err, data) {
+          // Check if the file contains a route tag.
+          for(var i = 0; i < types.length; i++) {
+            // If it contains a route tag, then add it to the list of files to require.
+            if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
+              lists[i].push(file);
+              return cb();
+            }
+          }
+          log.t("\tSkipping File: %s", file);
+          return cb();
+        });
+        break;
+      case 'filename':
+        var fileName = file.substring(file.lastIndexOf('/')+1);
         for(var i = 0; i < types.length; i++) {
-          // If it contains a route tag, then add it to the list of files to require.
-          if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
+          if(fileName.toLowerCase().indexOf(CONFIG.identification.identifier + types[i]) != -1) {
             lists[i].push(file);
+            return cb();
           }
         }
+        log.t("\tSkipping File: %s", file);
         return cb();
-      });
-      break;
-    case 'filename':
-      break;
-  }
-    //list.push(file);
-    //cb();
+        break;
+    }
   }, function(err, success) {
     if(err) {
       return cb(err);
@@ -466,10 +402,6 @@ var buildDirectoryList = function(directory, types, cb) {
     updateDirectoryInCache(CACHE, directory, list, cb);
   });
 };
-
-var getFileType = function(file, types, cb) {
-  
-}
 
 /**
  * Attempt to require an ordered list of files and return a list
@@ -560,7 +492,6 @@ var loadDirectories = function() {
 };
 
 var requireFile = function(_file, _cb) {
-
   var cb = _cb,
       file = _file;
 
@@ -587,7 +518,7 @@ Crave.prototype.files = requireFiles;
 Crave.prototype.file = requireFile;
 
 Crave.prototype.setConfig = handleCraveConfig;
-//Crave.prototype.createFileList = createFileList;
+Crave.prototype.clearCache = clearCache;
 
 exports = module.exports = new Crave();
 exports = Crave;

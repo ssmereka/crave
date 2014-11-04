@@ -52,6 +52,17 @@ var folderToLoad = path.resolve("./app");
 // types not in this list will not be loaded (aka required) by crave.
 var types = [ "model", "controller" ];
 
+// You can setup crave using a configuration object.
+crave.setConfig({
+  cache: {                    // Values related to caching a list of files to require.
+    enable: false,            // When true, the files you require are stored to disk to increase performance.  The cache, once created, will not be updated until you issue the crave.clearCache() command.
+  },
+  identification: {           // Variables related to how to find and require files are stored here.
+    //type: "filename",         // Determines how to find files.  Available options are: 'string', 'filename'
+    //identifier: "_"           // Determines how to identify the files.
+  }
+});
+
 // Recursively load all files of the specified type(s) that are also located in the specified folder.
 // When loading these files the application and configuration objects will be passed in as parameters.
 // You can pass any number of parameters by continuing to overload the function below.  Finally the start server method
