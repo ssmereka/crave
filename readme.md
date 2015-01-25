@@ -17,6 +17,7 @@ The grouping of files by features gives a few benefit of treating each folder as
 **Current Status:** In Development.
 
 [![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
+[![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
 
 # Getting Started
 
