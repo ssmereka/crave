@@ -69,6 +69,13 @@ var handleCraveConfig = function(config) {
 };
 
 /**
+ * Gets the current configuration object and returns it.
+ */
+var getConfig = function() {
+  return CONFIG;
+};
+
+/**
  * Merge two objects attributes into a single object.
  * This will do a deep merge, meaning that if both objects 
  * contain an attribute that is also an object, then they 
@@ -551,6 +558,7 @@ Crave.prototype.files = requireFiles;
 Crave.prototype.file = requireFile;
 
 Crave.prototype.setConfig = handleCraveConfig;
+Crave.prototype.getConfig = getConfig;
 Crave.prototype.clearCache = clearCache;
 
 exports = module.exports = new Crave();
