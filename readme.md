@@ -16,6 +16,8 @@ The grouping of files by features gives a few benefit of treating each folder as
 
 **Current Status:** In Development.
 
+[![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
+
 # Getting Started
 
 Install Crave using npm and save it as a dependancy in your package.json.
