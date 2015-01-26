@@ -89,7 +89,7 @@ You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass 
 
 ```javascript
 var crave = require('crave');
-var expres = require(express);
+var express = require(express);
 
 var app = express();
 
