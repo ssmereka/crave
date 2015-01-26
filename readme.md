@@ -1,18 +1,14 @@
-# Crave
+![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)
 
-Locate and require node components (controllers, models, etc) dynamically within your application.
+Require node components (controllers, models, etc) dynamically from anywhere within your application.
 
-Crave gives you the ability to structure a server's files any way you like without the extra burden of manually requiring files.  For example, you may have this common file structure:
+Crave gives you the ability to structure your application any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
 
-![Common Folder Structure](http://i.imgur.com/713xT0E.png) 
+![File Structure Diagram](http://i.imgur.com/H3fBKMR.png) 
 
-Typically a server would require all the files in the models directory and then the controller directory.  This works great, but also restricts how you can organize your files.
+**Left**:  A common node application file structure where each folder is required dynamically.  This works great, but restricts where your files must be located.
 
-Using Crave, you could restructure the files to look like this:
-
-![Crave Folder Structure](http://i.imgur.com/QrKzzXp.png)
-
-The grouping of files by features gives a few benefit of treating each folder as a module, increasing portability and maintainability. 
+**Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes relevant code easier to find or transfer between projects.
 
 **Current Status:** In Development.
 
