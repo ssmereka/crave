@@ -1,4 +1,4 @@
-![Crave Logo](http://i.imgur.com/e8I1abL.jpg)  
+<img src="http://i.imgur.com/e8I1abL.jpg" />
 
 Locate and require node components (controllers, models, etc) dynamically within your application.
 
