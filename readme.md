@@ -1,4 +1,4 @@
-![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg]
+![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)
 
 Require node components (controllers, models, etc) dynamically from anywhere within your application.
 
