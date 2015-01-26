@@ -10,7 +10,7 @@ Crave gives you the ability to structure your application any way you like witho
 
 **Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes relevant code easier to find or transfer between projects.
 
-**Current Status:** In Development.
+**Current Status:** Production v0.0.6
 
 [![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
 [![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
