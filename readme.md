@@ -84,6 +84,10 @@ var types = [ "controller" ];
 crave.directory(directoryToLoad, types, startServerMethod, app, config);
 ```
 
+# Cache
+
+```//TODO: This feature works, but needs to be documented and tested.```
+
 # Config
 You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
 
@@ -94,8 +98,14 @@ var express = require(express);
 var app = express();
 
 crave.setConfig({
+  cache: {
+    enable: true
+  },
   debug: true,
-  identifier: "(>^_^)>"
+  identification: {
+    type: 'string',
+    identifier: "(>^_^)>"
+  }
 })
 
 crave.directory("/path/to/directory", [ "controller" ], function(err) { console.log(err || "success"), app);
@@ -105,8 +115,13 @@ The available properties are:
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| **debug** | Boolean | false | When true, Crave will display log messages. |
-| **identifier** | String | "~>" | Specifies the string used to indicate the following text is a Crave type. |
+| **cache** | Object |  | An object containing configuration properties related to file path caching. |
+| **cache.enable** | Boolean | ```false``` | when true, the file path cache is used. | 
+| **cache.path** | String | ```/data/cache.json``` | An absolute path to where the file path cache is stored or will be stored. |
+| **debug** | Boolean | ```false``` | When true, Crave will display log messages. |
+| **identification** | Object |  | An object containing configuration properties related to how files are recognized and grouped. |
+| **identification.type** | String | ```string``` | Describes the method on each file to find an identifier.  Available options are ```string``` or ```filename```, where either the file is searched or a filename is searched looking for the identifier specified, respectively. |
+| **identification.identifier** | String | ```~>``` | A unique string used to indicate the following string indicates the grouping name for a file. |
 
 
 # Documentation
