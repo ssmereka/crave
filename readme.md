@@ -85,8 +85,86 @@ crave.directory(directoryToLoad, types, startServerMethod, app, config);
 ```
 
 # Cache
+Searching for files or inside files can take some time.  In a devlopment enviorment this time is negligible, however in a production enviorment we should avoid it.  So when in production you should enable the cache.
 
-```//TODO: This feature works, but needs to be documented and tested.```
+```
+crave.setConfig({
+  cache: {
+    enable: true
+  }
+});
+```
+
+Once the cache is enabled and ```crave.directory()``` is called, then crave will save the ordered list of files to a file.  After that each time ```crave.directory()``` is called the same list of files will be required until it is cleared, even if the server is restarted or new files are added.  
+
+## Clear Cache
+Crave can of course delete the cache using the ```clearCache()``` method.  Once the cache is deleted, a new list will be generated and saved the next time ```crave.directory()``` is called.  Lets look at an example:
+
+```javascript
+// Keeps track of how many time we have restarted the server.
+var restartCounter = 0;
+
+// Create a method to start the server.
+var startServerMethod = function(err) {
+  if(err) return console.log(err);
+
+  var server = app.listen(3000, function() {
+    console.log("Listening on http://127.0.0.1:3000");
+    
+    if(restartCounter < 1) {
+      console.log("Restarting server for the " + restartCounter + " time."); // 1st
+
+      // Increment the restart counter and restart the server
+      restartCounter++;
+      app.close();
+      
+      // Crave recognizes that the cache is enabled and already exists.  The cached
+      // list is used to require all the files.  Even though we requested that "model"
+      // also be included, they will not.
+      crave.directory("/path/to/directory", [ "controller", "model" ], startServerMethod, app);
+    } else if(restartCounter < 2) {
+      console.log("Restarting server for the " + restartCounter + " time."); // 2nd
+      
+      // Increment the restart counter and restart the server
+      restartCounter++;
+      app.close();
+      
+      // Clear the cache
+      crave.clearCache();
+      
+      // Crave recognizes that the cache is enabled and does not exist.  This triggers 
+      // crave to search for all the files to require and rebuild the cache.  This time
+      // "model" will be included.
+      crave.directory("/path/to/directory", [ "controller", "model" ], startServerMethod, app);
+    }
+  });
+}
+
+// Enable the cache for crave.
+crave.setConfig({
+  cache: {
+    enable: true
+  }
+});
+
+// Trigger crave to search for all the files to require.  Once found this ordered 
+// list will be saved to a file.  Once this file is created, it will never change
+// until you tell crave to remove it.
+crave.directory("/path/to/directory", [ "controller" ], startServerMethod, app);
+```
+
+## Cache Path
+The cache file is stored by default in the crave module folder at ```/data/cache.json```.  You can change this location by specifying an absolute path in the ```path``` property of the configuration object.
+
+```
+crave.setConfig({
+  cache: {
+    enable: true,
+    path: "/Absolute/Path/To/Custom/Cache/File.json"
+  }
+})
+```
+
 
 # Config
 You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
