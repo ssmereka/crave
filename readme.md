@@ -1,8 +1,8 @@
 <a href="https://i.imgur.com/kUpVtGD.gif" target="_blank">![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)</a>
 
-[![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
-[![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
-[![npm version](https://badge.fury.io/js/crave.svg)](http://badge.fury.io/js/crave)
+<a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a>
+<a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a>
+<a href="http://badge.fury.io/js/crave" target="_blank"><img src="https://badge.fury.io/js/crave.svg" /></a>
 
 Structure a node project your way with the ability to require models, controllers, or any file dynamically.
 
