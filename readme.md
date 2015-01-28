@@ -4,15 +4,16 @@
 [![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
 [![npm version](https://badge.fury.io/js/crave.svg)](http://badge.fury.io/js/crave)
 
-Require node components (controllers, models, etc) dynamically from anywhere within your application.
+Structure a node project your way with the ability to require models, controllers, or any file dynamically.
 
-Crave gives you the ability to structure your application any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
+# <a target="_blank" href="http://i.imgur.com/zKkNNBh.jpg">WAT</a><a target="_blank" href="http://i.imgur.com/yJreqHM.png">?</a>
+Let me explain.  Crave gives you the ability to structure your application's files any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
 
 ![File Structure Diagram](http://i.imgur.com/H3fBKMR.png) 
 
 **Left**:  A common node application file structure where each folder is required dynamically.  This works great, but restricts where your files must be located.
 
-**Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes relevant code easier to find or transfer between projects.
+**Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes related code easier to find and transfer between projects.
 
 # Getting Started
 
