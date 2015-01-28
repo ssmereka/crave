@@ -1,4 +1,8 @@
-![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)
+<a href="https://i.imgur.com/kUpVtGD.gif" target="_blank">![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)</a>
+
+[![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
+[![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
+[![npm version](https://badge.fury.io/js/crave.svg)](http://badge.fury.io/js/crave)
 
 Require node components (controllers, models, etc) dynamically from anywhere within your application.
 
@@ -9,11 +13,6 @@ Crave gives you the ability to structure your application any way you like witho
 **Left**:  A common node application file structure where each folder is required dynamically.  This works great, but restricts where your files must be located.
 
 **Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes relevant code easier to find or transfer between projects.
-
-**Current Status:** Production v0.0.6
-
-[![Build Status](https://travis-ci.org/ssmereka/crave.svg)](https://travis-ci.org/ssmereka/crave)
-[![Dependency Status](https://david-dm.org/ssmereka/crave.svg)](https://david-dm.org/ssmereka/crave)
 
 # Getting Started
 
