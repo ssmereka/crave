@@ -1,12 +1,14 @@
-var fs = require('fs'),
+var Config = new (require("./config.js")),
+    fs = require('fs'),
+    Log = require('./log.js'),
     mkdirp = require('mkdirp'),
     path = require('path');
 
-var CONFIG,
-    CACHE = [],
-    DEBUG = true;    // When enabled additional log messages are shown.
+var config,
+    cache = [],
+    debug = true,     // When enabled additional log messages are shown.
+    log;
 
-var log;
 
 /* ************************************************** *
  * ******************** Cache
@@ -33,8 +35,8 @@ var cacheExample = [
  * @param config is a full or partial configuration object.
  * @constructor
  */
-var Crave = function(config) {
-  handleCraveConfig(config);
+var Crave = function(_config) {
+  handleCraveConfig(_config);
 };
 
 
@@ -43,86 +45,28 @@ var Crave = function(config) {
  * ************************************************** */
 
 /**
- * Default configuration object containing default values
- * that can be overridden.
- */
-var defaultConfig = {
-  cache: {                                                // Values related to caching a list of files to require.
-    enable: false,                                        // When true, the files you require are stored to disk to increase performance.
-    path: path.resolve(__dirname, "../data/cache.json")   // Path to the file used to store the cache.
-  },
-  debug: false,                                           // When true, additional logs are displayed.
-  identification: {                                       // Variables related to how to find and require files are stored here.
-    type: "string",                                     // How to find files.  Available options: 'string', 'filename'
-    identifier: "~>"                                    // How to identify the files.
-  }
-};
-
-/**
  * Handle a change in the configuration object.
  * @param config is the new configuration object.
  */
-var handleCraveConfig = function(config) {
-  CONFIG = (config) ? deepPriorityMergeSync(config, defaultConfig) : defaultConfig;
-  DEBUG = (CONFIG.debug);
-  log = new Log(CONFIG.debug);
+var handleCraveConfig = function(_config) {
+  if(config && config.cache.enable === true && _config && _config.cache && _config.cache.enable === false) {
+    clearCacheSync();
+  }
+
+  config = Config.setConfig(_config);
+  debug = (config.debug);
+  log = new Log(config.debug);
+
+  //log.t("Set Config: \n%s", JSON.stringify(config, undefined, 2));
+  return config;
 };
 
 /**
  * Gets the current configuration object and returns it.
  */
 var getConfig = function() {
-  return CONFIG;
+  return config;
 };
-
-/**
- * Merge two objects attributes into a single object.
- * This will do a deep merge, meaning that if both objects 
- * contain an attribute that is also an object, then they 
- * will be merged as well.  This will give all priorty to
- * the first object, meaning if both objects have the same 
- * attribute, the first object's value will be preserved
- * while the second-object's value is not.
- */
-var deepPriorityMergeSync = function(obj1, obj2) {
-  var result = {};
-
-  // Loop through all the attributes in the first object.
-  for(var key in obj1) {
-    
-    // If obj1's property is an object and not an array
-    if(obj1.hasOwnProperty(key) && obj1[key] !== null && typeof obj1[key] === 'object' && ! (obj1[key] instanceof Array)) {     
-      
-      // And obj2's attribute with the same key is also an object.
-      if(obj2.hasOwnProperty(key) && obj2[key] !== null && typeof obj2[key] === 'object') {
-        // recurse and merge those objects as well.
-        result[key] = deepPriorityMergeSync(obj1[key], obj2[key]);
-      } else {
-        // Otherwise store the object in the result.
-        result[key] = obj1[key];
-      }
-    } else {
-      // If the attribute is not an object, store it in the results.
-      result[key] = obj1[key];
-    }
-  }
-
-  // Loop through and add all the attributes in object 2 that
-  // are not already in object 1.
-  for(i in obj2) {
-    if(obj2.hasOwnProperty(i)) {
-      // If the attribute is already in the result, skip it.
-      if(i in result) {
-        continue;
-      }
-
-      // Add the new attribute to the result object.
-      result[i] = obj2[i];
-    }
-  }
-
-  return result;
-}
 
 
 /* ************************************************** *
@@ -134,35 +78,35 @@ var deepPriorityMergeSync = function(obj1, obj2) {
  * An error and/or cache is returned to the callback.
  * @param cb is a callback method where the result and/or error is returned.
  */
-var loadCache = function(config, cb) {
-  if( ! config.cache || ! config.cache.enable) {
+var loadCache = function(_config, cb) {
+  if( ! _config.cache || ! _config.cache.enable) {
     //return cb(new Error("Load Cache Error:  cache is not enabled."));
-    log.t("\nLoad Cache: Cache only found in memory.\nCache Value: %s\n", JSON.stringify(CACHE, undefined, 2));
-    return cb(undefined, CACHE);
+    log.t("\nLoad Cache: Cache only found in memory.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
+    return cb(undefined, cache);
   }
 
-  if(! config.cache.path) {
+  if(! _config.cache.path) {
     return cb(new Error("Invalid cache path."));
   }
 
-  if( ! fs.existsSync(config.cache.path)) {
-    log.t("\nLoad Cache: Cache not yet saved to disk, loading from memory.\nCache Value: %s\n", JSON.stringify(CACHE, undefined, 2));
-    return cb(undefined, CACHE);
+  if( ! fs.existsSync(_config.cache.path)) {
+    log.t("\nLoad Cache: Cache not yet saved to disk, loading from memory.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
+    return cb(undefined, cache);
   }
 
-  fs.readFile(config.cache.path, 'utf8', function(err, data){
+  fs.readFile(_config.cache.path, 'utf8', function(err, data){
     if(err) {
       return cb(err);
     }
 
     try {
-      cache = JSON.parse(data);
+      _cache = JSON.parse(data);
     } catch(err) {
       return cb(err);
     }
 
-    log.t("\nLoad Cache: Loaded from disk.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
-    return cb(err, cache, true);
+    log.t("\nLoad Cache: Loaded from disk.\nCache Value: %s\n", JSON.stringify(_cache, undefined, 2));
+    return cb(err, _cache, true);
   });
 };
 
@@ -170,70 +114,94 @@ var loadCache = function(config, cb) {
  * Updates the global cache value and persist the cache to disk if the
  * caching option is enabled in the config.  An error and/or cache is
  * returned to the callback.
- * @param cache is the json cache object to be persisted.
+ * @param _cache is the json cache object to be persisted.
  * @param cb is a callback method where the result and/or error is returned.
  */
-var saveCache = function(cache, cb) {
-  CACHE = cache;
+var saveCache = function(_cache, cb) {
+  cache = _cache;
 
-  if( ! CONFIG.cache || ! CONFIG.cache.enable) {
+  if( ! config.cache || ! config.cache.enable) {
     //return cb(new Error("Load Cache Error:  cache is not enabled."));
-    log.t("\nSave Cache: Updated in memory. \n%s\n", JSON.stringify(cache, undefined, 2));
-    return cb(undefined, cache)
+    log.t("\nSave Cache: Updated in memory. \n%s\n", JSON.stringify(_cache, undefined, 2));
+    return cb(undefined, _cache)
   }
 
-  if(! CONFIG.cache.path) {
+  if(! config.cache.path) {
     return cb(new Error("Invalid cache path."));
   }
 
-  mkdirp(CONFIG.cache.path.substring(0, CONFIG.cache.path.lastIndexOf('/')), function(err) {
+  mkdirp(config.cache.path.substring(0, config.cache.path.lastIndexOf('/')), function(err) {
     if(err) {
       return cb(err);
     }
 
-    fs.writeFile(CONFIG.cache.path, JSON.stringify(cache, undefined, 2), function(err) {
+    fs.writeFile(config.cache.path, JSON.stringify(_cache, undefined, 2), function(err) {
       if(err) {
         return cb(err);
       }
 
-      log.t("Save Cache: Saved to disk\n%s\n", JSON.stringify(cache, undefined, 2));
-      cb(undefined, cache, true);
+      log.t("Save Cache: Saved to disk\n%s\n", JSON.stringify(_cache, undefined, 2));
+      cb(undefined, _cache, true);
     });
   });
 };
 
-var clearCache = function(cb) {
-  if(CONFIG.cache && CONFIG.cache.path) {
-    if(fs.exists(CONFIG.cache.path)) {
-      fs.unlinkSync(CONFIG.cache.path);
+var clearCacheSync = function() {
+  cache = [];
+
+  if(config.cache && config.cache.path) {
+    if(fs.existsSync(config.cache.path)) {
+      fs.unlinkSync(config.cache.path);
     }
   }
-
-  CACHE = [];
 };
+
+var clearCache = function(cb) {
+  if( ! cb) {
+    cb = function(err) {
+      if(err) {
+        log.e(err);
+      }
+    };
+  }
+
+  cache = [];
+  
+  if(config.cache && config.cache.path) {
+    fs.exists(config.cache.path, function(v) {
+      if(v) {
+        fs.unlink(config.cache.path, function(err) {
+          cb(err);
+        });
+      }
+    });
+  } else {
+    cb();
+  }
+}
 
 /**
  * Update a specific directory's list of files in the cache.
- * @param cache is the cache object to update.
+ * @param _cache is the cache object to update.
  * @param directory is the directory to update.
  * @param files is an ordered array of file paths to require.
  * @param cb is a callback method where a result and/or error are returned.
  */
-var updateDirectoryInCache = function(cache, directory, files, cb) {
+var updateDirectoryInCache = function(_cache, directory, files, cb) {
   log.t("\nUpdate Directory In Cache: \t%s \n\tFiles: \t [ %s ]\n", directory, files);
-  for(var i = 0; i < cache.length; i++) {
+  for(var i = 0; i < _cache.length; i++) {
     if(_cache[i]["directory"] === directory) {
-      cache[i] = files;
-      return saveCache(cache, cb);
+      _cache[i] = files;
+      return saveCache(_cache, cb);
     }
   }
 
-  cache.push({
+  _cache.push({
     directory: directory,
     files: files
   });
 
-  saveCache(cache, cb);
+  saveCache(_cache, cb);
 };
 
 /**
@@ -241,47 +209,22 @@ var updateDirectoryInCache = function(cache, directory, files, cb) {
  * @param _cache
  * @param cb
  */
-var createListFromCache = function(cache, cb) {
+var createListFromCache = function(_cache, cb) {
   var list = [];
-  for(var y = 0; y < cache.length; y++) {
-    for(var x = 0; x < cache[y]["files"].length; x++) {
-      list.push(cache[y].files[x]);
+
+  try {
+    for(var y = 0; y < _cache.length; y++) {
+      for(var x = 0; x < _cache[y]["files"].length; x++) {
+        list.push(_cache[y].files[x]);
+      }
     }
+  } catch(err) {
+    log.e(err);
+    log.e("createListCache():  Cache is undefined.  Returning blank list.");
+    list = [];
   }
 
   cb(undefined, list);
-};
-
-/* ************************************************** *
- * ******************** Logging
- * ************************************************** */
-
-/**
- * Logs messages, if debug is enabled.
- * @param msg is the message to log.
- */
-var Log = function (debug) {
-  this.debug = debug;
-  this.trace = debug;
-  this.error = debug;
-};
-
-Log.prototype.d = function() {
-  if(this.debug) {
-    console.log.apply(this, arguments);
-  }
-};
-
-Log.prototype.t = function() {
-  if(this.trace) {
-    console.log.apply(this, arguments);
-  }
-};
-
-Log.prototype.e = function() {
-  if(this.error) {
-    console.log.apply(this, arguments);
-  }
 };
 
 
@@ -401,14 +344,14 @@ var buildDirectoryList = function(directory, types, cb) {
 
   walkAsync(directory, function(file, cb) {
     log.t("\tChecking File: %s", file);
-    switch(CONFIG.identification.type) {
+    switch(config.identification.type) {
       default:
       case 'string':
         fs.readFile(file, 'utf8', function(err, data) {
           // Check if the file contains a route tag.
           for(var i = 0; i < types.length; i++) {
             // If it contains a route tag, then add it to the list of files to require.
-            if(data.toLowerCase().indexOf(CONFIG.identification.identifier + " " + types[i]) != -1) {
+            if(data.toLowerCase().indexOf(config.identification.identifier + " " + types[i]) != -1) {
               lists[i].push(file);
               return cb();
             }
@@ -420,7 +363,7 @@ var buildDirectoryList = function(directory, types, cb) {
       case 'filename':
         var fileName = file.substring(file.lastIndexOf('/')+1);
         for(var i = 0; i < types.length; i++) {
-          if(fileName.toLowerCase().indexOf(CONFIG.identification.identifier + types[i]) != -1) {
+          if(fileName.toLowerCase().indexOf(config.identification.identifier + types[i]) != -1) {
             lists[i].push(file);
             return cb();
           }
@@ -439,7 +382,7 @@ var buildDirectoryList = function(directory, types, cb) {
         list.push(lists[y][x]);
       }
     }
-    updateDirectoryInCache(CACHE, directory, list, cb);
+    updateDirectoryInCache(cache, directory, list, cb);
   });
 };
 
@@ -504,20 +447,18 @@ var loadDirectory = function(_directory, _types, _cb) {
     }
   }
 
-  loadCache(CONFIG, function(err, cache) {
+  loadCache(config, function(err, _cache) {
     if(err) {
-      return cb(err);
-    }
-
-    if(cache["directory"]) {
-      createListFromCache(cache, function (err, files) {
+      cb(err);
+    } else if(_cache && _cache[0] && _cache[directory]) {
+      createListFromCache(_cache[0], function (err, files) {
         _arguments[0] = files;
         _arguments[1] = cb;
         requireFiles.apply(null, _arguments);
       });
     } else {
-      buildDirectoryList(directory, types, function (err, cache) {
-        createListFromCache(cache, function (err, files) {
+      buildDirectoryList(directory, types, function (err, _cache) {
+        createListFromCache(_cache, function (err, files) {
           _arguments[0] = files;
           _arguments[1] = cb;
           requireFiles.apply(null, _arguments);
@@ -560,6 +501,7 @@ Crave.prototype.file = requireFile;
 Crave.prototype.setConfig = handleCraveConfig;
 Crave.prototype.getConfig = getConfig;
 Crave.prototype.clearCache = clearCache;
+Crave.prototype.clearCacheSync = clearCacheSync;
 
 exports = module.exports = new Crave();
 exports = Crave;

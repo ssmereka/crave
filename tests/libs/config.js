@@ -38,6 +38,7 @@ describe('Config', function() {
 
   it('config default values should be correct.', function() {
     assert.equal(config["cache"]["enable"], defaultConfig.cache.enable);
+    config["cache"]["path"].should.be.ok
     assert.equal(config["debug"], defaultConfig.debug);
     assert.equal(config["identification"]["type"], defaultConfig.identification.type);
     assert.equal(config["identification"]["identifier"], defaultConfig.identification.identifier);
