@@ -448,9 +448,10 @@ var loadDirectory = function(_directory, _types, _cb) {
   }
 
   loadCache(config, function(err, _cache) {
+
     if(err) {
       cb(err);
-    } else if(_cache && _cache[0] && _cache[directory]) {
+    } else if(_cache && _cache[0] && _cache[0]["directory"]) {
       createListFromCache(_cache[0], function (err, files) {
         _arguments[0] = files;
         _arguments[1] = cb;
