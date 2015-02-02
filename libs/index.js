@@ -1,28 +1,15 @@
+// Require modules and libs.
 var Config = new (require("./config.js")),
     fs = require('fs'),
     Log = require('./log.js'),
     mkdirp = require('mkdirp'),
     path = require('path');
 
+// Local-Global variable instances.
 var config,
     cache = [],
-    debug = true,     // When enabled additional log messages are shown.
+    debug,
     log;
-
-
-/* ************************************************** *
- * ******************** Cache
- * ************************************************** */
-
-var cacheExample = [
-  {
-    directory: "/Path/To/My/Directory",
-    files: [
-      "/Path/To/A/File.js",
-      "/Path/To/Another/File.js"
-    ]
-  }
-];
 
 
 /* ************************************************** *
@@ -54,8 +41,8 @@ var handleCraveConfig = function(_config) {
   }
 
   config = Config.setConfig(_config);
-  debug = (config.debug);
-  log = new Log(config.debug);
+  debug = (config.debug === true);
+  log = Config.getLog();
 
   //log.t("Set Config: \n%s", JSON.stringify(config, undefined, 2));
   return config;
@@ -80,8 +67,7 @@ var getConfig = function() {
  */
 var loadCache = function(_config, cb) {
   if( ! _config.cache || ! _config.cache.enable) {
-    //return cb(new Error("Load Cache Error:  cache is not enabled."));
-    log.t("\nLoad Cache: Cache only found in memory.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
+    log.t("Cache only found in memory with the value of: \n%s\n", JSON.stringify(cache, undefined, 2));
     return cb(undefined, cache);
   }
 
@@ -90,7 +76,7 @@ var loadCache = function(_config, cb) {
   }
 
   if( ! fs.existsSync(_config.cache.path)) {
-    log.t("\nLoad Cache: Cache not yet saved to disk, loading from memory.\nCache Value: %s\n", JSON.stringify(cache, undefined, 2));
+    log.t("Cache not yet saved to disk, loading from memory with value of: \n%s\n", JSON.stringify(cache, undefined, 2));
     return cb(undefined, cache);
   }
 
@@ -105,7 +91,7 @@ var loadCache = function(_config, cb) {
       return cb(err);
     }
 
-    log.t("\nLoad Cache: Loaded from disk.\nCache Value: %s\n", JSON.stringify(_cache, undefined, 2));
+    log.t("Cache loaded from disk with value of: \n%s\n", JSON.stringify(_cache, undefined, 2));
     return cb(err, _cache, true);
   });
 };
@@ -121,8 +107,7 @@ var saveCache = function(_cache, cb) {
   cache = _cache;
 
   if( ! config.cache || ! config.cache.enable) {
-    //return cb(new Error("Load Cache Error:  cache is not enabled."));
-    log.t("\nSave Cache: Updated in memory. \n%s\n", JSON.stringify(_cache, undefined, 2));
+    log.t("Cache updated in memory with value of: \n%s\n", JSON.stringify(_cache, undefined, 2));
     return cb(undefined, _cache)
   }
 
@@ -140,7 +125,7 @@ var saveCache = function(_cache, cb) {
         return cb(err);
       }
 
-      log.t("Save Cache: Saved to disk\n%s\n", JSON.stringify(_cache, undefined, 2));
+      log.t("Cache saved to disk with value of: \n%s\n", JSON.stringify(_cache, undefined, 2));
       cb(undefined, _cache, true);
     });
   });
@@ -152,10 +137,22 @@ var clearCacheSync = function() {
   if(config.cache && config.cache.path) {
     if(fs.existsSync(config.cache.path)) {
       fs.unlinkSync(config.cache.path);
+      log.t("Cache cleared and '%s' deleted.", config.cache.path);
+    } else {
+      log.t("Cache cleared.");
     }
+  } else {
+    log.t("Cache cleared.");
   }
+
+  return true;
 };
 
+/**
+ * Asynchronously clear the current cache in memory and on
+ * disk if it exists.  If the cache file could not be deleted
+ * an error will be returned in the callback.
+ */
 var clearCache = function(cb) {
   if( ! cb) {
     cb = function(err) {
@@ -171,11 +168,19 @@ var clearCache = function(cb) {
     fs.exists(config.cache.path, function(v) {
       if(v) {
         fs.unlink(config.cache.path, function(err) {
+          if( ! err) {
+            log.t("Cache cleared and '%s' deleted.", config.cache.path);
+          }
+
           cb(err);
         });
+      } else {
+        log.t("Cache cleared");
+        cb();
       }
     });
   } else {
+    log.t("Cache cleared");
     cb();
   }
 }
@@ -188,7 +193,7 @@ var clearCache = function(cb) {
  * @param cb is a callback method where a result and/or error are returned.
  */
 var updateDirectoryInCache = function(_cache, directory, files, cb) {
-  log.t("\nUpdate Directory In Cache: \t%s \n\tFiles: \t [ %s ]\n", directory, files);
+  log.t("Update Directory In Cache: \nDirectory: %s \nFiles: %s\n", directory, JSON.stringify(files, undefined, 2));
   for(var i = 0; i < _cache.length; i++) {
     if(_cache[i]["directory"] === directory) {
       _cache[i] = files;
@@ -205,9 +210,9 @@ var updateDirectoryInCache = function(_cache, directory, files, cb) {
 };
 
 /**
- *
- * @param _cache
- * @param cb
+ * Create a list of to require from the cache.
+ * @param _cache is the current cache.
+ * @param cb is a callback method where the list of files, or error, is returned.
  */
 var createListFromCache = function(_cache, cb) {
   var list = [];
@@ -220,8 +225,9 @@ var createListFromCache = function(_cache, cb) {
     }
   } catch(err) {
     log.e(err);
-    log.e("createListCache():  Cache is undefined.  Returning blank list.");
+    log.e("Cannot create a list of files from an undefined cache.  Returning a blank list of files.");
     list = [];
+    //TODO: Return error here or fail silently? 
   }
 
   cb(undefined, list);
@@ -343,7 +349,7 @@ var buildDirectoryList = function(directory, types, cb) {
   };
 
   walkAsync(directory, function(file, cb) {
-    log.t("\tChecking File: %s", file);
+    log.t("Checking File: %s", file);
     switch(config.identification.type) {
       default:
       case 'string':
@@ -356,7 +362,7 @@ var buildDirectoryList = function(directory, types, cb) {
               return cb();
             }
           }
-          log.t("\tSkipping File: %s", file);
+          log.t("\t\tSkipping File: %s", file);
           return cb();
         });
         break;
@@ -382,6 +388,8 @@ var buildDirectoryList = function(directory, types, cb) {
         list.push(lists[y][x]);
       }
     }
+
+    log.d("Directory list built successfully: \n%s\n", JSON.stringify(list, undefined, 2));
     updateDirectoryInCache(cache, directory, list, cb);
   });
 };
@@ -393,7 +401,7 @@ var buildDirectoryList = function(directory, types, cb) {
  * @param cb is a callback method where the result and/or error will be returned.
  */
 var requireFiles = function(_list, _cb) {
-  log.t("Require Files: \t[ %s ]\n", _list);
+  log.t("Require Files: \n%s\n", JSON.stringify(_list, undefined, 2));
   var list = _list,
       cb = _cb;
 
@@ -432,6 +440,12 @@ var requireFiles = function(_list, _cb) {
   cb(undefined, list);
 };
 
+
+/**
+ * Build or load a cache, then require all the files 
+ * in the correct order.
+ * If an error occurred it will be passed to the callback.
+ */
 var loadDirectory = function(_directory, _types, _cb) {
   var cb = _cb,
       directory = _directory,
@@ -453,26 +467,47 @@ var loadDirectory = function(_directory, _types, _cb) {
       cb(err);
     } else if(_cache && _cache[0] && _cache[0]["directory"]) {
       createListFromCache(_cache[0], function (err, files) {
-        _arguments[0] = files;
-        _arguments[1] = cb;
-        requireFiles.apply(null, _arguments);
-      });
-    } else {
-      buildDirectoryList(directory, types, function (err, _cache) {
-        createListFromCache(_cache, function (err, files) {
+        if(err) {
+          cb(err);
+        } else {
           _arguments[0] = files;
           _arguments[1] = cb;
           requireFiles.apply(null, _arguments);
-        });
+        }
+      });
+    } else {
+      buildDirectoryList(directory, types, function (err, _cache) {
+        if(err) {
+          cb(err);
+        } else {
+          createListFromCache(_cache, function (err, files) {
+            if(err) {
+              cb(err);
+            } else {
+              _arguments[0] = files;
+              _arguments[1] = cb;
+              requireFiles.apply(null, _arguments);
+            }
+          });
+        }
       });
     }
   });
 };
 
-var loadDirectories = function() {
+/**
+ * Build or load a cache using multiple possible file locations,
+ * then require all the files in the correct order.
+ * If an error occurred it will be passed to the callback.
+ */
+//var loadDirectories = function() {
+    //TODO: Implement this.
+//};
 
-};
 
+/**
+ * Load a file by requiring it and passing in all the arguments.
+ */
 var requireFile = function(_file, _cb) {
   var cb = _cb,
       file = _file;
@@ -495,7 +530,7 @@ var requireFile = function(_file, _cb) {
  * ************************************************** */
 
 Crave.prototype.directory = loadDirectory;
-Crave.prototype.directories = loadDirectory;
+//Crave.prototype.directories = loadDirectory;
 Crave.prototype.files = requireFiles;
 Crave.prototype.file = requireFile;
 

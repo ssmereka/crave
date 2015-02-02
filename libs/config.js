@@ -1,20 +1,73 @@
+// Require modules and libs.
 var defaultConfig = require("../config/config.js"),
-    currentConfig = defaultConfig;
+    Log = require('./log.js');
 
+// Local-Global variable instances.
+var currentConfig = defaultConfig,
+    log;
 
+/**
+ * Constructor for configuration lib.  Initalizes
+ * the current configuration object and log.
+ */
 var Config = function(config) {
   setConfig(config || defaultConfig);
 }
 
-
+/**
+ * Handle all the setup required when setting or changing
+ * the config object.  
+ * Returns the most current configuration object.
+ */
 var setConfig = function(config) {
+  var err;
+
+  if(log === undefined) {
+    log = new Log();
+  }
+
   if(config) {
-    currentConfig = deepPriorityMergeSync(config, currentConfig);
+    config = deepPriorityMergeSync(config, currentConfig);
+
+    if(config["enabled"] === true && isPathValid(config["path"]) === false) {
+      currentConfig = config;
+      currentConfig.enabled = false;
+      err = "Could not enable cache because path is invalid.";
+    } else {
+      currentConfig = config;
+    }
+
+    //console.log(config);
+
+    log.setLogMode(config.debug, config.trace, config.error);
   }
 
   return currentConfig;
 }
 
+/**
+ * Return the current log object.
+ */
+var getLog = function() {
+  return log;
+}
+
+/**
+ * Validate the path string to prevent issues where cache is
+ * being generated and saved correctly, but the location is 
+ * wrong.
+ */
+var isPathValid = function(path) {
+  if(path === undefined || path === null || path === "undefined" || path === "null") {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Return the current configuration object.
+ */
 var getConfig = function() {
   return currentConfig;
 }
@@ -26,7 +79,10 @@ var getConfig = function() {
  * will be merged as well.  This will give all priorty to
  * the first object, meaning if both objects have the same 
  * attribute, the first object's value will be preserved
- * while the second-object's value is not.
+ * while the second-object's value is not.  If an attribute
+ * is undefined, then it will be removed from the final 
+ * config object.  Note that NaN, null, and other values will
+ * not cause the property to be removed.
  */
 var deepPriorityMergeSync = function(obj1, obj2) {
   var result = {};
@@ -46,15 +102,17 @@ var deepPriorityMergeSync = function(obj1, obj2) {
         result[key] = obj1[key];
       }
     } else {
-      // If the attribute is not an object, store it in the results.
-      result[key] = obj1[key];
+      // If the attribute is not an object and not undefined, store it in the results.
+      if(obj1[key] !== undefined) {
+        result[key] = obj1[key];
+      }
     }
   }
 
   // Loop through and add all the attributes in object 2 that
   // are not already in object 1.
   for(i in obj2) {
-    if(obj2.hasOwnProperty(i)) {
+    if(obj2.hasOwnProperty(i) && obj2[i] !== undefined) {
       // If the attribute is already in the result, skip it.
       if(i in result) {
         continue;
@@ -72,6 +130,7 @@ Config.prototype.defaultConfig = defaultConfig;
 Config.prototype.deepPriorityMergeSync = deepPriorityMergeSync;
 Config.prototype.setConfig = setConfig;
 Config.prototype.getConfig = getConfig;
+Config.prototype.getLog = getLog;
 
 exports = module.exports = Config;
 exports = Config;

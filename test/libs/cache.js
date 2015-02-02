@@ -1,6 +1,5 @@
 var assert = require("assert"),
-    crave = require('../../libs/index.js');
-    debug = false,
+    crave = require('../../libs/index.js'),
     fs = require("fs"),
     path = require("path"),
     pathToExampleApp = path.resolve(__dirname, "../app"),
@@ -20,7 +19,7 @@ var cacheData = {
 describe('Cache', function() {
 
   it('should be created if enabled', function(done) {
-    crave.setConfig({ cache: { enable: true }, debug: debug });
+    crave.setConfig({ cache: { enable: true } });
 
     var callback = function(err) {
       if(err) {
@@ -88,14 +87,14 @@ describe('Cache', function() {
 
     crave.directory(pathToExampleApp, ["controller"], callback, undefined, {});
   });
-  /*
+
   it('should be removed if disabled', function() {
-    var config = crave.setConfig({ cache: { enable: false }, debug: debug });
+    var config = crave.setConfig({ cache: { enable: false } });
     assert.equal(fs.existsSync(config.cache.path), false);
   });
 
   it('should be removed if we clear the cache', function(done) {
-    crave.setConfig({ cache: { enable: true }, debug: debug });
+    crave.setConfig({ cache: { enable: true } });
 
     var callback = function(err, files) {
       if(err) {
@@ -118,11 +117,10 @@ describe('Cache', function() {
     crave.directory(pathToExampleApp, ["model", "controller"], callback, undefined, {});
   });
 
-
   describe('using filenames for identification.', function() {
 
     it('should be created if enabled', function(done) {
-      crave.setConfig({ cache: { enable: true }, debug: debug, identification: { type: "filename", identifier: "_" } });
+      crave.setConfig({ cache: { enable: true }, identification: { type: "filename", identifier: "_" } });
 
       var callback = function(err) {
         if(err) {
@@ -162,10 +160,9 @@ describe('Cache', function() {
 
 
     it('should be removed if disabled', function() {
-      var config = crave.setConfig({ cache: { enable: false }, debug: debug });
+      var config = crave.setConfig({ cache: { enable: false } });
       assert.equal(fs.existsSync(config.cache.path), false);
     });
   });
 
-  */
 });

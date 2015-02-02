@@ -12,11 +12,9 @@
   "description": "",
   "devDependencies": {
     "codecov.io": "0.0.8",
-    "coveralls": "^2.11.2",
     "istanbul": "^0.3.5",
     "lodash": "^2.4.1",
     "mocha": "^2.1.0",
-    "mocha-lcov-reporter": "0.0.1",
     "should": "^4.6.1"
   },
   "engines": {
@@ -43,7 +41,7 @@
     "url": "https://github.com/ssmereka/crave.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "CRAVE_DEBUG=false CRAVE_TRACE=false CRAVE_ERROR=false mocha"
   },
   "version": "0.0.8"
 }
