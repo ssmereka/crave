@@ -41,7 +41,7 @@
     "url": "https://github.com/ssmereka/crave.git"
   },
   "scripts": {
-    "test": "CRAVE_DEBUG=false CRAVE_TRACE=false CRAVE_ERROR=false mocha"
+    "test": "mocha"
   },
   "version": "0.0.8"
 }

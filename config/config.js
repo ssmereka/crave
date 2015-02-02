@@ -1,8 +1,8 @@
 var path = require("path");
 
-var debug = (process.env.CRAVE_DEBUG && (process.env.CRAVE_DEBUG === true || process.env.CRAVE_DEBUG.toLowerCase() === "true")),
-    trace = (process.env.CRAVE_TRACE && (process.env.CRAVE_TRACE === true || process.env.CRAVE_TRACE.toLowerCase() === "true")),
-    error =  (! (process.env.CRAVE_ERROR && (process.env.CRAVE_ERROR === false || process.env.CRAVE_ERROR.toLowerCase() === "false")));
+var debug = (process.env.CRAVE_DEBUG && (process.env.CRAVE_DEBUG === true || process.env.CRAVE_DEBUG.toLowerCase() === "true")) ? true : false,
+    trace = (process.env.CRAVE_TRACE && (process.env.CRAVE_TRACE === true || process.env.CRAVE_TRACE.toLowerCase() === "true")) ? true : false,
+    error = (process.env.CRAVE_ERROR && (process.env.CRAVE_ERROR === false || process.env.CRAVE_ERROR.toLowerCase() === "false")) ? false : true;
 
 /**
  * Makes the default configuration object available
