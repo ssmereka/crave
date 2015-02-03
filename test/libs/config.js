@@ -58,7 +58,7 @@ describe('Config', function() {
 
   it('methods setConfig() and getConfig() should return the same object', function() {
     var setConfigObj = crave.setConfig({});
-    var getConfigObj = crave.getConfig({});
+    var getConfigObj = crave.getConfig();
 
     assert.equal(_.isEqual(setConfigObj,getConfigObj), true);
   });
