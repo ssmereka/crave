@@ -29,15 +29,14 @@ var setConfig = function(config) {
   if(config) {
     config = deepPriorityMergeSync(config, currentConfig);
 
-    if(config["enabled"] === true && isPathValid(config["path"]) === false) {
+    if(config["cache"]["enable"] === true && isPathValid(config["cache"]["path"]) === false) {
+      err = "Could not enable cache because the path value of "+config.cache.path+" is invalid.";
+      config.cache.enable = false;
+      config.cache.path = currentConfig.cache.path;
       currentConfig = config;
-      currentConfig.enabled = false;
-      err = "Could not enable cache because path is invalid.";
     } else {
       currentConfig = config;
     }
-
-    //console.log(config);
 
     log.setLogMode(config.debug, config.trace, config.error);
   }

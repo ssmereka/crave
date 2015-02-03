@@ -56,11 +56,21 @@ describe('Config', function() {
     assert.equal(config["identification"]["identifier"], defaultConfig.identification.identifier);
   });
 
-  it('setConfig() and getConfig() should return the same object', function() {
+  it('methods setConfig() and getConfig() should return the same object', function() {
     var setConfigObj = crave.setConfig({});
     var getConfigObj = crave.getConfig({});
 
     assert.equal(_.isEqual(setConfigObj,getConfigObj), true);
+  });
+
+  it('should not enable when path is invalid', function() {
+    var configObject = crave.setConfig({ cache: { enable: true, path: "undefined" } });
+    var expectedPath = config.cache.path;
+
+    configObject.should.be.ok;
+    configObject.cache.should.be.ok;
+    configObject.cache.enable.should.be.false;
+    configObject.cache.path.should.be.expectedPath;
   });
 
   it('should return a valid log object', function() {
