@@ -63,6 +63,22 @@ describe('Config', function() {
     assert.equal(_.isEqual(setConfigObj,getConfigObj), true);
   });
 
+  it('method getConfig() should return a valid config object', function() {
+    var configObject = crave.getConfig();
+
+    configObject.should.have.property('cache');
+    assert.equal(_.isObject(configObject["cache"]), true);
+    configObject["cache"].should.have.property('enable');
+    configObject["cache"].should.have.property('path');
+    configObject.should.have.property('debug');
+    configObject.should.have.property('trace');
+    configObject.should.have.property('error');
+    configObject.should.have.property('identification');
+    assert.equal(_.isObject(configObject["identification"]), true);
+    configObject["identification"].should.have.property('type');
+    configObject["identification"].should.have.property('identifier');
+  });
+
   it('should not enable when path is invalid', function() {
     var configObject = crave.setConfig({ cache: { enable: true, path: "undefined" } });
     var expectedPath = config.cache.path;
@@ -106,6 +122,7 @@ describe('Config', function() {
       modifiedConfig = crave.getConfig();
       assert.equal(modifiedConfig["cache"]["enable"], true);
       config["cache"].should.have.property('path');
+      crave.clearCache();
       crave.setConfig(config);
     });
 

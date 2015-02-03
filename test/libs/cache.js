@@ -117,6 +117,49 @@ describe('Cache', function() {
     crave.directory(pathToExampleApp, ["model", "controller"], callback, undefined, {});
   });
 
+  it('path is invalid, then it should produce an error message', function(done) {
+    crave.loadCache({ cache: { enable: true, path: null } }, function(err) {
+      assert.equal(err.message, "Invalid cache path.");
+      done();
+    });
+  });
+
+  it('update a current directory in the cache object.', function(done) {
+    var expectedCache = [{
+      directory: pathToExampleApp,
+      files: [ "/my/test/file/2_model.js", "/my/test/file/2_controller.js"]
+    }];
+
+    crave.updateDirectoryInCache(
+      [{
+        directory: pathToExampleApp,
+        files: [ "/my/test/file/1_model.js", "/my/test/file/1_controller.js"]
+      }], 
+      expectedCache[0].directory, 
+      expectedCache[0].files, 
+      function(err, _cache) {
+        crave.clearCache();
+        assert.equal(err, undefined);
+        assert.equal(_.isEqual(_cache, expectedCache), true);
+        done();
+      }
+    );
+  });
+
+  it('directories should be able to have a trailing slash', function(done) {
+    var pathToExampleAppWithSlash = pathToExampleApp + "/";
+
+    var callback = function(err) {
+      if(err) {
+        done(err);
+      } else {
+        crave.clearCache(done);
+      }
+    };
+
+    crave.directory(pathToExampleAppWithSlash, ["model", "controller"], callback, undefined, {});
+  });
+
   describe('using filenames for identification.', function() {
 
     it('should be created if enabled', function(done) {
@@ -158,11 +201,10 @@ describe('Cache', function() {
       });
     });
 
-
     it('should be removed if disabled', function() {
       var config = crave.setConfig({ cache: { enable: false } });
       assert.equal(fs.existsSync(config.cache.path), false);
     });
-  });
 
+  }); 
 });

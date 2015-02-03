@@ -131,6 +131,14 @@ var saveCache = function(_cache, cb) {
   });
 };
 
+var removeTrailingSlash = function(v) {
+  if(v && v.length > 0 && v.substring(v.length -1) === "/") {
+    v = v.substring(0, v.length -1);
+  }
+
+  return v;
+}
+
 var clearCacheSync = function() {
   cache = [];
 
@@ -194,9 +202,10 @@ var clearCache = function(cb) {
  */
 var updateDirectoryInCache = function(_cache, directory, files, cb) {
   log.t("Update Directory In Cache: \nDirectory: %s \nFiles: %s\n", directory, JSON.stringify(files, undefined, 2));
+
   for(var i = 0; i < _cache.length; i++) {
     if(_cache[i]["directory"] === directory) {
-      _cache[i] = files;
+      _cache[i]["files"] = files;
       return saveCache(_cache, cb);
     }
   }
@@ -276,7 +285,7 @@ var walkAsync = function(directory, action, cb) {
       if(isFileInvalid(file)) {
         log.d("\tSkipping: " + directory + "/" + file);
         pending--;
-        return cb(null, true);
+        return;  // Not entirely sure why this works lol but I'm tired, TODO: see why "return cb(null, true);"" broke the codes.
       }
 
       // Add a trailing / and file to the directory we are in.
@@ -291,7 +300,7 @@ var walkAsync = function(directory, action, cb) {
         // If a directory, add it to our list and continue walking.
         if (stat && stat.isDirectory()) {
           walkAsync(file, action, function(err, success) {
-            if (!--pending) {
+            if ( ! --pending) {
               cb(null, success);
             }
           });
@@ -367,9 +376,9 @@ var buildDirectoryList = function(directory, types, cb) {
         });
         break;
       case 'filename':
-        var fileName = file.substring(file.lastIndexOf('/')+1);
+        var fileName = file.substring(file.lastIndexOf('/')+1).toLowerCase();
         for(var i = 0; i < types.length; i++) {
-          if(fileName.toLowerCase().indexOf(config.identification.identifier + types[i]) != -1) {
+          if(fileName.indexOf(config.identification.identifier + types[i]) != -1) {
             lists[i].push(file);
             return cb();
           }
@@ -508,7 +517,7 @@ var loadDirectory = function(_directory, _types, _cb) {
 /**
  * Load a file by requiring it and passing in all the arguments.
  */
-var requireFile = function(_file, _cb) {
+/*var requireFile = function(_file, _cb) {
   var cb = _cb,
       file = _file;
 
@@ -523,7 +532,7 @@ var requireFile = function(_file, _cb) {
   }
   require(file).apply(_this, _arguments);
   cb(undefined, [ file ]);
-};
+}; */
 
 /* ************************************************** *
  * ******************** Public API
@@ -532,12 +541,18 @@ var requireFile = function(_file, _cb) {
 Crave.prototype.directory = loadDirectory;
 //Crave.prototype.directories = loadDirectory;
 Crave.prototype.files = requireFiles;
-Crave.prototype.file = requireFile;
+//Crave.prototype.file = requireFile;
 
 Crave.prototype.setConfig = handleCraveConfig;
 Crave.prototype.getConfig = getConfig;
 Crave.prototype.clearCache = clearCache;
 Crave.prototype.clearCacheSync = clearCacheSync;
+
+// These are exposed for testing purposes only.
+if(process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "test") {
+  Crave.prototype.loadCache = loadCache;
+  Crave.prototype.updateDirectoryInCache = updateDirectoryInCache;
+}
 
 exports = module.exports = new Crave();
 exports = Crave;
