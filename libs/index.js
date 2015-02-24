@@ -137,7 +137,7 @@ var removeTrailingSlash = function(v) {
   }
 
   return v;
-}
+};
 
 var clearCacheSync = function() {
   cache = [];
@@ -191,7 +191,7 @@ var clearCache = function(cb) {
     log.t("Cache cleared");
     cb();
   }
-}
+};
 
 /**
  * Update a specific directory's list of files in the cache.
@@ -443,7 +443,12 @@ var requireFiles = function(_list, _cb) {
     }
 
     log.d("\tRequire: " + list[i]);
-    require(list[i]).apply(_this, _arguments);
+    try {
+      require(list[i]).apply(_this, _arguments);
+    } catch(err) {
+      log.d(err);
+      log.e("%s was not exported as a function and therefore cannot be required by Crave.", list[i]);
+    }
   }
 
   cb(undefined, list);

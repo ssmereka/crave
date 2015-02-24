@@ -25,7 +25,7 @@ var connect = function(callback) {
   mongoose.connection.once('open', function() {
     callback(undefined, mongoose);
   });
-}
+};
 
 // Method to connect to database and start the server.
 var start = function(err, files) {
@@ -38,7 +38,7 @@ var start = function(err, files) {
 
     var server = app.listen(3000, function() {
       var serverInfo = this.address();
-      var address = (serverInfo.address === "0.0.0.0") ? "localhost" : serverInfo.address;
+      var address = (serverInfo.address === "::") ? "localhost" : serverInfo.address;
       
       console.log("Listening on http://%s:%s", address, serverInfo.port);
     });
@@ -55,7 +55,7 @@ var types = [ "model", "controller" ];
 // You can setup crave using a configuration object.
 crave.setConfig({
   cache: {                    // Values related to caching a list of files to require.
-    enable: false,            // When true, the files you require are stored to disk to increase performance.  The cache, once created, will not be updated until you issue the crave.clearCache() command.
+    enable: false             // When true, the files you require are stored to disk to increase performance.  The cache, once created, will not be updated until you issue the crave.clearCache() command.
   },
   identification: {           // Variables related to how to find and require files are stored here.
     //type: "filename",         // Determines how to find files.  Available options are: 'string', 'filename'
