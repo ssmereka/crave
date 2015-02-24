@@ -5,7 +5,7 @@
 <a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
 <a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
 
-<a href="https://nodei.co/npm/crave/"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true"></a>
+<a href="https://nodei.co/npm/crave/" target="_blank"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true"></a>
 
 
 # <a target="_blank" href="http://i.imgur.com/zKkNNBh.jpg">WAT</a><a target="_blank" href="http://i.imgur.com/yJreqHM.png">?</a>
