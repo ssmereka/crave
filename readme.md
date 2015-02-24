@@ -8,7 +8,7 @@
 <a href="https://nodei.co/npm/crave/"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true"></a>
 
 
-**Structure a node project your way with the ability to require models, controllers, or any file dynamically.**
+#### Structure a node project your way with the ability to require models, controllers, or any file dynamically.
 
 # <a target="_blank" href="http://i.imgur.com/zKkNNBh.jpg">WAT</a><a target="_blank" href="http://i.imgur.com/yJreqHM.png">?</a>
 Let me explain.  Crave gives you the ability to structure your application's files any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
