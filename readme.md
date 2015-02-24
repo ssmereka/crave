@@ -3,8 +3,7 @@
 <a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a>
 <a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a>
 <a href="http://badge.fury.io/js/crave" target="_blank"><img src="https://badge.fury.io/js/crave.svg" /></a>
-<a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
-<a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
+<a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a><a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
 
 Structure a node project your way with the ability to require models, controllers, or any file dynamically.
 
@@ -39,11 +38,11 @@ var crave = require('crave');
 Controllers, modules, and other files you wish to require before starting your server should be structured like this:
 
 ```javascript
-// This is the Crave type, it tells crave when and 
+// This is the Crave type, it tells crave when and
 // if to load this file.  You can use any text you want.
 // ~> Controller
 
-// Export a function whose parameters are global values 
+// Export a function whose parameters are global values
 // needed in the controller's logic.
 module.exports = function (app, config) {
 
@@ -79,7 +78,7 @@ var startServerMethod = function(err) {
 var directoryToLoad = '/path/to/my/app/files';
 
 // Define an ordered list of file types for Crave to load.
-// This is the Crave type we just talked about in the 
+// This is the Crave type we just talked about in the
 // earlier example:  " // ~> Controller "
 var types = [ "controller" ];
 
@@ -105,7 +104,7 @@ var app = express();
 crave.setConfig({
   cache: {
     enable: true              // Enable caching of the list of files to require.
-  }, 
+  },
   debug: true,                // Display log messages in crave.
   identification: {
     type: 'string',           // Search for a string after an identifier in each file.
@@ -121,7 +120,7 @@ The available properties are:
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | **cache** | Object |  | An object containing configuration properties related to file path caching. |
-| **cache.enable** | Boolean | ```false``` | when true, the file path cache is used. | 
+| **cache.enable** | Boolean | ```false``` | when true, the file path cache is used. |
 | **cache.path** | String | ```/data/cache.json``` | An absolute path to where the file path cache is stored or will be stored. |
 | **debug** | Boolean | ```false``` | When true, Crave will display log messages. |
 | **error** | Boolean | ```true``` | When true, Crave will display error log messages. |
@@ -130,6 +129,52 @@ The available properties are:
 | **identification.identifier** | String | ```~>``` | A unique string used to indicate the following string indicates the grouping name for a file. |
 | **trace** | Boolean | ```false``` | When true, Crave will display trace log messages. |
 
+
+< href="fileIdentification" />
+# File Identification
+You may have noticed that you can change how Crave identifies a file as a ```model```, ```controller```, or etc.  There are two ways to identify a file, either using a ```string``` of text in the file or by ```filename```.
+
+< href="fileIdentificationString" />
+## String
+When using the ```string``` option, crave will search all the text in every file looking for the unique identifier you specify.  Once an identifier is found the following string will be evaluated as a possible type (e.g. ```controller```).
+
+String identification is the default for Crave and an example can be found in the [Getting Started](#gettingStarted) section.
+
+< href="fileIdentificationFilename" />
+## Filename
+When using the ```filename``` option, crave will search each filename for the unique identifier you specified.  Once an identifier is found the following characters will be evaluated as a possible type (e.g. ```controller```).
+
+Crave can be configured to use filenames using the configuration object.  Here is an example:
+
+```javascript
+var crave = require('crave');
+var express = require(express);
+
+var app = express();
+
+crave.setConfig({
+  identification: {
+    type: 'filename',
+    identifier: "_"
+  }
+})
+
+crave.directory("/path/to/directory", [ "model", "controller" ], function(err) { console.log(err || "success"), app);
+```
+
+Using the configuration described above the following file structure:
+
+![](http://i.imgur.com/QrKzzXp.png)
+
+
+Crave would generate a list of files to require that looks like this:
+
+```
+~/myproject/app/device/device_model.js
+~/myproject/app/user/user_model.js
+~/myproject/app/device/device_controller.js
+~/myproject/app/user/user_controller.js
+```
 
 
 
@@ -162,29 +207,29 @@ var startServerMethod = function(err) {
 
   var server = app.listen(3000, function() {
     console.log("Listening on http://127.0.0.1:3000");
-    
+
     if(restartCounter < 1) {
       console.log("Restarting server for the " + restartCounter + " time."); // 1st
 
       // Increment the restart counter and restart the server
       restartCounter++;
       app.close();
-      
+
       // Crave recognizes that the cache is enabled and already exists.  The cached
       // list is used to require all the files.  Even though we requested that "model"
       // also be included, they will not.
       crave.directory("/path/to/directory", [ "controller", "model" ], startServerMethod, app);
     } else if(restartCounter < 2) {
       console.log("Restarting server for the " + restartCounter + " time."); // 2nd
-      
+
       // Increment the restart counter and restart the server
       restartCounter++;
       app.close();
-      
+
       // Clear the cache
       crave.clearCache();
-      
-      // Crave recognizes that the cache is enabled and does not exist.  This triggers 
+
+      // Crave recognizes that the cache is enabled and does not exist.  This triggers
       // crave to search for all the files to require and rebuild the cache.  This time
       // "model" will be included.
       crave.directory("/path/to/directory", [ "controller", "model" ], startServerMethod, app);
@@ -199,7 +244,7 @@ crave.setConfig({
   }
 });
 
-// Trigger crave to search for all the files to require.  Once found this ordered 
+// Trigger crave to search for all the files to require.  Once found this ordered
 // list will be saved to a file.  Once this file is created, it will never change
 // until you tell crave to remove it.
 crave.directory("/path/to/directory", [ "controller" ], startServerMethod, app);
