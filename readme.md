@@ -1,12 +1,8 @@
 <a href="https://i.imgur.com/kUpVtGD.gif" target="_blank">![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)</a>
 
-<a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a>
-<a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a>
-<a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
-<a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
-
 <a href="https://nodei.co/npm/crave/" target="_blank"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true"></a>
 
+<a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a> <a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a> <a href="https://gratipay.com/ScottSmereka/" target="_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg" /> <a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
 
 # <a target="_blank" href="http://i.imgur.com/zKkNNBh.jpg">WAT</a><a target="_blank" href="http://i.imgur.com/yJreqHM.png">?</a>
 Crave gives you the ability to structure your application's files any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
@@ -132,17 +128,17 @@ The available properties are:
 | **trace** | Boolean | ```false``` | When true, Crave will display trace log messages. |
 
 
-< href="fileIdentification" />
+<a href="fileIdentification" />
 # File Identification
 You may have noticed that you can change how Crave identifies a file as a ```model```, ```controller```, or etc.  There are two ways to identify a file, either using a ```string``` of text in the file or by ```filename```.
 
-< href="fileIdentificationString" />
+<a href="fileIdentificationString" />
 ## String
 When using the ```string``` option, crave will search all the text in every file looking for the unique identifier you specify.  Once an identifier is found the following string will be evaluated as a possible type (e.g. ```controller```).
 
 String identification is the default for Crave and an example can be found in the [Getting Started](#gettingStarted) section.
 
-< href="fileIdentificationFilename" />
+<a href="fileIdentificationFilename" />
 ## Filename
 When using the ```filename``` option, crave will search each filename for the unique identifier you specified.  Once an identifier is found the following characters will be evaluated as a possible type (e.g. ```controller```).
 
