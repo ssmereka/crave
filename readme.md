@@ -3,7 +3,8 @@
 <a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a>
 <a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a>
 <a href="http://badge.fury.io/js/crave" target="_blank"><img src="https://badge.fury.io/js/crave.svg" /></a>
-<a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a><a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
+<a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
+<a href="https://gratipay.com/ScottSmereka/" target=_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg"></a>
 
 Structure a node project your way with the ability to require models, controllers, or any file dynamically.
 
@@ -15,6 +16,7 @@ Let me explain.  Crave gives you the ability to structure your application's fil
 **Left**:  A common node application file structure where each folder is required dynamically.  This works great, but restricts where your files must be located.
 
 **Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes related code easier to find and transfer between projects.
+
 
 
 
