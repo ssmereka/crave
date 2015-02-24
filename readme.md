@@ -273,4 +273,4 @@ Further documentation can be found in the [wiki](https://github.com/ssmereka/cra
 
 
 <a href="license" />
-###[MIT License](http://www.tldrlegal.com/license/mit-license "MIT License")
+### <a href="http://www.tldrlegal.com/license/mit-license" target="_blank">MIT License</a>
