@@ -17,6 +17,11 @@ Let me explain.  Crave gives you the ability to structure your application's fil
 
 **Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes related code easier to find and transfer between projects.
 
+
+
+
+
+<a href="gettingStarted" />
 # Getting Started
 
 Install Crave using npm and save it as a dependancy in your package.json.
@@ -86,8 +91,52 @@ var types = [ "controller" ];
 crave.directory(directoryToLoad, types, startServerMethod, app, config);
 ```
 
+
+<a href="config" />
+# Config
+You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
+
+```javascript
+var crave = require('crave');
+var express = require(express);
+
+var app = express();
+
+crave.setConfig({
+  cache: {
+    enable: true              // Enable caching of the list of files to require.
+  }, 
+  debug: true,                // Display log messages in crave.
+  identification: {
+    type: 'string',           // Search for a string after an identifier in each file.
+    identifier: "(>^_^)>"     // The identifier preceding the string.  Example: (>^_^)> Controller
+  }
+})
+
+crave.directory("/path/to/directory", [ "controller" ], function(err) { console.log(err || "success"), app);
+```
+
+The available properties are:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| **cache** | Object |  | An object containing configuration properties related to file path caching. |
+| **cache.enable** | Boolean | ```false``` | when true, the file path cache is used. | 
+| **cache.path** | String | ```/data/cache.json``` | An absolute path to where the file path cache is stored or will be stored. |
+| **debug** | Boolean | ```false``` | When true, Crave will display log messages. |
+| **error** | Boolean | ```true``` | When true, Crave will display error log messages. |
+| **identification** | Object |  | An object containing configuration properties related to how files are recognized and grouped. |
+| **identification.type** | String | ```string``` | Describes the method on each file to find an identifier.  Available options are ```string``` or ```filename```, where either the file is searched or a filename is searched looking for the identifier specified, respectively. |
+| **identification.identifier** | String | ```~>``` | A unique string used to indicate the following string indicates the grouping name for a file. |
+| **trace** | Boolean | ```false``` | When true, Crave will display trace log messages. |
+
+
+
+
+
+<a href="cache" />
 # Cache
-Searching for files or inside files can take some time.  In a devlopment enviorment this time is negligible, however in a production enviorment we should avoid it.  So when in production you should enable the cache.
+Searching for files or inside files can take some time.  In a development environment this time is negligible, however in a production environment we should avoid it.  So when in production you should enable the cache.
 
 ```
 crave.setConfig({
@@ -99,6 +148,7 @@ crave.setConfig({
 
 Once the cache is enabled and ```crave.directory()``` is called, then crave will save the ordered list of files to a file.  After that each time ```crave.directory()``` is called the same list of files will be required until it is cleared, even if the server is restarted or new files are added.  
 
+<a href="clearCache" />
 ## Clear Cache
 Crave can of course delete the cache using the ```clearCache()``` method.  Once the cache is deleted, a new list will be generated and saved the next time ```crave.directory()``` is called.  Lets look at an example:
 
@@ -155,6 +205,7 @@ crave.setConfig({
 crave.directory("/path/to/directory", [ "controller" ], startServerMethod, app);
 ```
 
+<a href="cachePath" />
 ## Cache Path
 The cache file is stored by default in the crave module folder at ```/data/cache.json```.  You can change this location by specifying an absolute path in the ```path``` property of the configuration object.
 
@@ -167,46 +218,16 @@ crave.setConfig({
 })
 ```
 
-
-# Config
-You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
-
-```javascript
-var crave = require('crave');
-var express = require(express);
-
-var app = express();
-
-crave.setConfig({
-  cache: {
-    enable: true
-  },
-  debug: true,
-  identification: {
-    type: 'string',
-    identifier: "(>^_^)>"
-  }
-})
-
-crave.directory("/path/to/directory", [ "controller" ], function(err) { console.log(err || "success"), app);
-```
-
-The available properties are:
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| **cache** | Object |  | An object containing configuration properties related to file path caching. |
-| **cache.enable** | Boolean | ```false``` | when true, the file path cache is used. | 
-| **cache.path** | String | ```/data/cache.json``` | An absolute path to where the file path cache is stored or will be stored. |
-| **debug** | Boolean | ```false``` | When true, Crave will display log messages. |
-| **identification** | Object |  | An object containing configuration properties related to how files are recognized and grouped. |
-| **identification.type** | String | ```string``` | Describes the method on each file to find an identifier.  Available options are ```string``` or ```filename```, where either the file is searched or a filename is searched looking for the identifier specified, respectively. |
-| **identification.identifier** | String | ```~>``` | A unique string used to indicate the following string indicates the grouping name for a file. |
+<a href="debug" />
+# Debug
+Debugging crave can be done using the ```debug```, ```trace```, and ```error``` flags that can be toggled on/off using the config.  When enabling these flags additional logging will be enabled allowing you to find issues within Crave easier.
 
 
+<a href="documentation" />
 # Documentation
 
 Further documentation can be found in the [wiki](https://github.com/ssmereka/crave/wiki).
 
 
+<a href="license" />
 ###[MIT License](http://www.tldrlegal.com/license/mit-license "MIT License")
