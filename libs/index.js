@@ -449,8 +449,12 @@ var requireFiles = function(_list, _cb) {
     try {
       value = require(list[i]).apply(_this, _arguments);
     } catch(err) {
-      log.d(err);
-      log.e("%s contains an error an therefore could not be required by Crave.", list[i]);
+      value = {
+        error: list[i] + " contains an error an therefore could not be required by Crave.",
+        stack: err.stack
+      };
+      log.e(value.error);
+      log.d(value.stack);
     }
 
     returnValues.push(value);
