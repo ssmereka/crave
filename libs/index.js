@@ -460,7 +460,9 @@ var requireFiles = function(_list, _cb) {
     returnValues.push(value);
   }
 
-  cb(undefined, list, returnValues);
+  if(cb !== undefined && cb !== null) {
+    cb(undefined, list, returnValues);
+  }
 };
 
 
