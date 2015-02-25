@@ -66,10 +66,12 @@ var app = express();
 var startServerMethod = function(err, filesRequired, returnValues) {
   if(err) return console.log(err);
 
-  // A list of files that were loaded is located in the filesRequired parameter.
+  // A list of files that were required by crave, or where attempted to be
+  // required by crave are listed in the filesRequired parameter.
   console.log(filesRequired);
   
-  // A list of values returned from each file is located in the returnValues parameter.
+  // A list of returned values, or errors, from each file required are located in the 
+  // returnValues parameter.
   console.log(returnValues);
 
   var server = app.listen(3000, function() {
@@ -92,6 +94,46 @@ var types = [ "controller" ];
 // to overload the crave.driectory method.  Once Crave has loaded all the files
 // the callback method will be called, aka startServerMethod.
 crave.directory(directoryToLoad, types, startServerMethod, app, config);
+```
+
+# Errors
+There are two types of errors ```passive``` and ```blocking```.  A blocking error is typically non-recoverable or requires the server to respond in some way.  Where a passive error can be ignored, allowing the server to operate as normal or close to normal.
+
+All errors are logged to the console by default and can be toggle off using the ```error``` flag in the Crave configuration object.
+
+## Blocking Errors
+If a blocking error occurs while requiring files crave will return the error instantly to the callback method provided.  Your server can then determine the best course of action.
+
+```javascript
+// ...
+var startServerMethod = function(err) {
+  if(err) return console.log(err);
+}
+// ...
+crave.directory(directoryToLoad, types, startServerMethod, app, config);
+```
+
+## Passive Errors
+If, for example, a file contains an error and as a result Crave fails to require the file, then a passive error would be generated.  Passive errors are passed to the callback method in the 3rd parameter, known as ```returnValues```.  Where ```returnValues``` is a list of values returned from each required file in the same order as the list of ```filesRequired```.
+
+```javascript
+// ...
+var startServerMethod = function(err, filesRequired, returnValues) {
+  if(err) return console.log(err);
+  
+  console.log(returnValues);
+}
+// ...
+crave.directory(directoryToLoad, types, startServerMethod, app, config);
+```
+
+Instead of ```undefined``` or the expected return value you will instead see something like the following:
+
+```json
+{
+  "error": "~/crave/examples/simple/app/error/errors_controller.js contains an error an therefore could not be required by Crave.",
+  "stack": "TypeError: undefined is not a function\n    at requireFiles (~/crave/libs/index.js:450:32)\n    at ~/crave/libs/index.js:512:28\n    at createListFromCache (~/crave/libs/index.js:242:3)\n    at ~/crave/libs/index.js:506:11\n    at saveCache (~/crave/libs/index.js:111:12)\n    at updateDirectoryInCache (~/crave/libs/index.js:218:3)\n    at ~/crave/libs/index.js:402:5\n    at ~/crave/libs/index.js:304:15\n    at ~/crave/libs/index.js:316:15\n    at ~/crave/libs/index.js:371:22"
+}
 ```
 
 
