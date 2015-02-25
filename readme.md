@@ -63,8 +63,14 @@ var crave = require('crave'),
 var app = express();
 
 // Create a method to start the server.
-var startServerMethod = function(err) {
+var startServerMethod = function(err, filesRequired, returnValues) {
   if(err) return console.log(err);
+
+  // A list of files that were loaded is located in the filesRequired parameter.
+  console.log(filesRequired);
+  
+  // A list of values returned from each file is located in the returnValues parameter.
+  console.log(returnValues);
 
   var server = app.listen(3000, function() {
     console.log("Listening on http://127.0.0.1:3000");
