@@ -28,10 +28,11 @@ var connect = function(callback) {
 };
 
 // Method to connect to database and start the server.
-var start = function(err, files) {
+var start = function(err, files, returnValues) {
   if(err) return console.log(err);
 
   //console.log(files);
+  //console.log(returnValues);
 
   connect(function(err) {
     if(err) return console.log(err);

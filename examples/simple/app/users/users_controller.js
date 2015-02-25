@@ -37,4 +37,10 @@ module.exports = function (app, config) {
     res.send(user);
   });
 
+
+  // Optionally, you can return any value you like and it will
+  // be available in the callback supplied to Crave.  You could
+  // for example expose methods, data, or anything you like.
+  return { name: "user_controller" };
+
 };

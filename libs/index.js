@@ -417,6 +417,8 @@ var requireFiles = function(_list, _cb) {
   var _arguments = arguments;
   var _this = this;
 
+  var returnValues = [];
+
   for(var i = 2; i < Object.keys(_arguments).length; i++) {
     if(_arguments[i]) {
       _arguments[i-2] = _arguments[i];
@@ -443,15 +445,18 @@ var requireFiles = function(_list, _cb) {
     }
 
     log.d("\tRequire: " + list[i]);
+    var value;
     try {
-      require(list[i]).apply(_this, _arguments);
+      value = require(list[i]).apply(_this, _arguments);
     } catch(err) {
       log.d(err);
-      log.e("%s was not exported as a function and therefore cannot be required by Crave.", list[i]);
+      log.e("%s contains an error an therefore could not be required by Crave.", list[i]);
     }
+
+    returnValues.push(value);
   }
 
-  cb(undefined, list);
+  cb(undefined, list, returnValues);
 };
 
 
