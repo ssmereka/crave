@@ -67,8 +67,8 @@ var getConfig = function() {
  */
 var loadCache = function(_config, cb) {
   if( ! _config.cache || ! _config.cache.enable) {
-    log.t("Cache only found in memory with the value of: \n%s\n", JSON.stringify(cache, undefined, 2));
-    return cb(undefined, cache);
+    log.t("Ignoring cache found only in memory with the value of: \n%s\n", JSON.stringify(cache, undefined, 2));
+    return cb();  //return cb(undefined, cache);
   }
 
   if(! _config.cache.path) {
