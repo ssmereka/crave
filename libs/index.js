@@ -454,7 +454,7 @@ var requireFiles = function(_list, _cb) {
         stack: err.stack
       };
       log.e(value.error);
-      log.d(value.stack);
+      log.e(value.stack);
     }
 
     returnValues.push(value);
