@@ -21,7 +21,7 @@ Crave gives you the ability to structure your application's files any way you li
 <a href="gettingStarted" />
 # Getting Started
 
-Install Crave using npm and save it as a dependancy in your package.json.
+Install Crave using npm and save it as a dependency in your package.json.
 
 ```javascript
 npm install crave --save
