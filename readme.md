@@ -131,8 +131,6 @@ Instead of ```undefined``` or the expected return value you will instead see som
 }
 ```
 
-
-<a href="config" />
 # Config
 You can configure Crave using the ```setConfig(myConfigObject)``` method.  Pass along an object with any of the properties you wish to override.  For example:
 
@@ -171,17 +169,14 @@ The available properties are:
 | **trace** | Boolean | ```false``` | When true, Crave will display trace log messages. |
 
 
-<a href="fileIdentification" />
 # File Identification
 You may have noticed that you can change how Crave identifies a file as a ```model```, ```controller```, or etc.  There are two ways to identify a file, either using a ```string``` of text in the file or by ```filename```.
 
-<a href="fileIdentificationString" />
 ## String
 When using the ```string``` option, crave will search all the text in every file looking for the unique identifier you specify.  Once an identifier is found the following string will be evaluated as a possible type (e.g. ```controller```).
 
-String identification is the default for Crave and an example can be found in the [Getting Started](#gettingStarted) section.
+String identification is the default for Crave and an example can be found in the [Getting Started](#getting-started) section.
 
-<a href="fileIdentificationFilename" />
 ## Filename
 When using the ```filename``` option, crave will search each filename for the unique identifier you specified.  Once an identifier is found the following characters will be evaluated as a possible type (e.g. ```controller```).
 
@@ -218,9 +213,6 @@ Crave would generate a list of files to require that looks like this:
 ```
 
 
-
-
-<a href="cache" />
 # Cache
 Searching for files or inside files can take some time.  In a development environment this time is negligible, however in a production environment we should avoid it.  So when in production you should enable the cache.
 
@@ -234,7 +226,6 @@ crave.setConfig({
 
 Once the cache is enabled and ```crave.directory()``` is called, then crave will save the ordered list of files to a file.  After that each time ```crave.directory()``` is called the same list of files will be required until it is cleared, even if the server is restarted or new files are added.  
 
-<a href="clearCache" />
 ## Clear Cache
 Crave can of course delete the cache using the ```clearCache()``` method.  Once the cache is deleted, a new list will be generated and saved the next time ```crave.directory()``` is called.  Lets look at an example:
 
