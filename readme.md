@@ -1,24 +1,19 @@
-<a href="https://i.imgur.com/kUpVtGD.gif" target="_blank">![Crave Text and Logo](http://i.imgur.com/e8I1abL.jpg)</a>
+<a href="https://i.imgur.com/kUpVtGD.gif" target="_blank"><img src="http://i.imgur.com/e8I1abL.jpg" /></a>
 
-<a href="https://nodei.co/npm/crave/" target="_blank"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true"></a>
+<a href="https://nodei.co/npm/crave/" target="_blank"><img src="https://nodei.co/npm/crave.png?downloads=true&downloadRank=true" /></a>
 
 <a href="https://travis-ci.org/ssmereka/crave" target="_blank"><img src="https://travis-ci.org/ssmereka/crave.svg" /></a> <a href="https://david-dm.org/ssmereka/crave" target="_blank"><img src="https://david-dm.org/ssmereka/crave.svg" /></a> <a href="https://gratipay.com/ScottSmereka/" target="_blank"><img src="http://img.shields.io/gratipay/ScottSmereka.svg" /> <a href="https://codecov.io/github/ssmereka/crave?branch=master" target="_blank"><img src="https://codecov.io/github/ssmereka/crave/coverage.svg?branch=master" /></a>
 
 # <a target="_blank" href="http://i.imgur.com/zKkNNBh.jpg">WAT</a><a target="_blank" href="http://i.imgur.com/yJreqHM.png">?</a>
 Crave gives you the ability to structure your application's files any way you like without the burden of manually requiring each file's location.  Take these file structures for example:
 
-<a href="http://i.imgur.com/Pc6Nj1E.gif" target="_blank"><img src="http://i.imgur.com/H3fBKMR.png"></a>
+<a href="http://i.imgur.com/Pc6Nj1E.gif" target="_blank"><img src="http://i.imgur.com/H3fBKMR.png" /></a>
 
 **Left**:  A common node application file structure where each folder is required dynamically.  This works great, but restricts where your files must be located.
 
 **Right**: Crave allows you to move files where ever you like and will require them dynamically.  This grouping by feature makes related code easier to find and transfer between projects.
 
 
-
-
-
-
-<a href="gettingStarted" />
 # Getting Started
 
 Install Crave using npm and save it as a dependency in your package.json.
@@ -296,7 +291,6 @@ crave.setConfig({
 crave.directory("/path/to/directory", [ "controller" ], startServerMethod, app);
 ```
 
-<a href="cachePath" />
 ## Cache Path
 The cache file is stored by default in the crave module folder at ```/data/cache.json```.  You can change this location by specifying an absolute path in the ```path``` property of the configuration object.
 
@@ -309,16 +303,13 @@ crave.setConfig({
 })
 ```
 
-<a href="debug" />
 # Debug
 Debugging crave can be done using the ```debug```, ```trace```, and ```error``` flags that can be toggled on/off using the config.  When enabling these flags additional logging will be enabled allowing you to find issues within Crave easier.
 
 
-<a href="documentation" />
 # Documentation
 
 Further documentation can be found in the [wiki](https://github.com/ssmereka/crave/wiki).
 
 
-<a href="license" />
 ### <a href="http://www.tldrlegal.com/license/mit-license" target="_blank">MIT License</a>

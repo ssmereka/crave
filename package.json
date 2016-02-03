@@ -7,19 +7,20 @@
   },
   "contributors": [],
   "dependencies": {
-    "mkdirp": "^0.5.0"
+    "mkdirp": "~0.5.1"
   },
-  "description": "",
+  "description": "Structure a node project your way with the ability to require models, controllers, or any file dynamically.",
   "devDependencies": {
-    "codecov.io": "0.0.8",
-    "istanbul": "^0.3.5",
-    "lodash": "^2.4.1",
-    "mocha": "^2.1.0",
-    "should": "^4.6.1"
+    "codecov.io": "~0.1.6",
+    "istanbul": "~0.4.2",
+    "lodash": "~4.2.0",
+    "mocha": "~2.4.5",
+    "should": "~8.2.1"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=4.2.6"
   },
+  "homepage": "https://github.com/ssmereka/crave#readme",
   "keywords": [
     "load",
     "require",
@@ -27,21 +28,17 @@
     "controller",
     "model"
   ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/ssmereka/crave/blob/master/license"
-    }
-  ],
+  "license": "MIT",
   "main": "./libs",
   "name": "crave",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/ssmereka/crave.git"
+    "url": "git+https://github.com/ssmereka/crave.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test-travis": "istanbul cover -x '**_test.js' -x '**_data.js' -x '**/test.js' -x '**/dataManager/**' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
   },
-  "version": "0.0.13"
+  "version": "0.0.14"
 }

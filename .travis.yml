@@ -1,4 +1,15 @@
+sudo: false
 language: node_js
 node_js:
-  - "0.10"
-after_success: istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js && rm -rf ./coverage
+  - v5
+  - v4
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+env: CXX="g++-4.8" CC="gcc-4.8"
+script: npm run-script test-travis
+after_success: cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js && rm -rf ./coverage
