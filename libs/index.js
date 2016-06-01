@@ -413,13 +413,14 @@ var requireFiles = function(_list, _cb) {
   log.t("Require Files: \n%s\n", JSON.stringify(_list, undefined, 2));
   var list = _list,
       cb = _cb;
-
+  
   var _arguments = arguments;
   var _this = this;
 
   var returnValues = [];
 
-  for(var i = 2; i < Object.keys(_arguments).length; i++) {
+  var length = Object.keys(_arguments).length;
+  for(var i = 2; i < length; i++) {
     if(_arguments[i]) {
       _arguments[i-2] = _arguments[i];
       delete _arguments[i];
@@ -478,8 +479,9 @@ var loadDirectory = function(_directory, _types, _cb) {
 
   var _arguments = arguments;
   var _this = this;
-
-  for(var i = 3; i < Object.keys(_arguments).length; i++) {
+  
+  var length = Object.keys(_arguments).length
+  for(var i = 3; i < length; i++) {
     if(_arguments[i]) {
       _arguments[i-1] = _arguments[i];
       delete _arguments[i];
