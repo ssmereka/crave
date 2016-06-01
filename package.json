@@ -40,5 +40,5 @@
     "test": "mocha",
     "test-travis": "istanbul cover -x '**_test.js' -x '**_data.js' -x '**/test.js' -x '**/dataManager/**' ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec"
   },
-  "version": "0.0.14"
+  "version": "0.0.15"
 }
