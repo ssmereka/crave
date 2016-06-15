@@ -1,9 +1,11 @@
-// Require modules and libs.
-var Config = new (require("./config.js")),
+// Require published node modules.
+var path = require('path');
+
+// Require local modules.
+var Config = new (require(path.resolve(__dirname + '/config.js'))),
     fs = require('fs'),
-    Log = require('./log.js'),
-    mkdirp = require('mkdirp'),
-    path = require('path');
+    Log = require(path.resolve(__dirname + '/log.js')),
+    mkdirp = require('mkdirp');
 
 // Local-Global variable instances.
 var config,
@@ -115,7 +117,7 @@ var saveCache = function(_cache, cb) {
     return cb(new Error("Invalid cache path."));
   }
 
-  mkdirp(config.cache.path.substring(0, config.cache.path.lastIndexOf('/')), function(err) {
+  mkdirp(config.cache.path.substring(0, config.cache.path.lastIndexOf(path.sep)), function(err) {
     if(err) {
       return cb(err);
     }
@@ -132,7 +134,7 @@ var saveCache = function(_cache, cb) {
 };
 
 var removeTrailingSlash = function(v) {
-  if(v && v.length > 0 && v.substring(v.length -1) === "/") {
+  if(v && v.length > 0 && v.substring(v.length -1) === path.sep) {
     v = v.substring(0, v.length -1);
   }
 
@@ -260,7 +262,7 @@ var walkAsync = function(directory, action, cb) {
   }
 
   // Ensure the directory does not have a trailing slash.
-  if(directory.substring(directory.length -1) === "/") {
+  if(directory.substring(directory.length -1) === path.sep) {
     directory = directory.substring(0, directory.length -1);
   }
 
@@ -283,13 +285,13 @@ var walkAsync = function(directory, action, cb) {
 
       // Check if the file is invalid; ignore invalid files.
       if(isFileInvalid(file)) {
-        log.d("\tSkipping: " + directory + "/" + file);
+        log.d("\tSkipping: " + directory + path.sep + file);
         pending--;
         return;  // Not entirely sure why this works lol but I'm tired, TODO: see why "return cb(null, true);"" broke the codes.
       }
 
       // Add a trailing / and file to the directory we are in.
-      file = directory + '/' + file;
+      file = directory + path.sep + file;
 
       // Check if the item is a file or directory.
       fs.stat(file, function(err, stat) {
@@ -376,7 +378,7 @@ var buildDirectoryList = function(directory, types, cb) {
         });
         break;
       case 'filename':
-        var fileName = file.substring(file.lastIndexOf('/')+1).toLowerCase();
+        var fileName = file.substring(file.lastIndexOf(path.sep)+1).toLowerCase();
         for(var i = 0; i < types.length; i++) {
           if(fileName.indexOf(config.identification.identifier + types[i]) != -1) {
             lists[i].push(file);
@@ -430,16 +432,14 @@ var requireFiles = function(_list, _cb) {
   for (var i = 0; i < list.length; i++) {
     // Don't try to load a file you can't.
     if (list[i] === undefined || list[i] === '') {
-      log("Can't require a file with path undefined.");
+      log.e("Can't require a file when the location is undefined.");
       list.splice(i, 1);
       i--;
       continue;
     }
 
-    // Make sure there is a '/' at the start of the path.
-    list[i] = (list[i].substring(0, 1) === '/') ? list[i] : '/' + list[i];
     if (!fs.existsSync(list[i])) {
-      log("Can't require a file that doesn't exist.");
+      log.e("File at location "+list[i]+" does not exist.");
       list.splice(i, 1);
       i--;
       continue;

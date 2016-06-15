@@ -8,8 +8,8 @@
   "contributors": [],
   "dependencies": {
     "crave": "git+https://github.com/ssmereka/crave.git#HEAD",
-    "express": "^4.10.1",
-    "mongoose": "3.8.x"
+    "express": "^4.13.4",
+    "mongoose": "4.5.x"
   },
   "description": "Simple example on how to use the npm module Crave.",
   "devDependencies": {},

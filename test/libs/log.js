@@ -33,11 +33,11 @@ describe('Log', function() {
 
   it('constructor should initalize default attributes properly', function() {
     var log = new Log();
-
+    
     log.should.be.ok;
-    log.debug.should.be.debug;
-    log.trace.should.be.trace;
-    log.error.should.be.error;
+    log.debug.should.be.eql(debug);
+    log.trace.should.be.eql(trace);
+    log.error.should.be.eql(error);
   });
 
   it('constructor should initalize it\'s attributes properly', function() {

@@ -81,12 +81,11 @@ describe('Config', function() {
 
   it('should not enable when path is invalid', function() {
     var configObject = crave.setConfig({ cache: { enable: true, path: "undefined" } });
-    var expectedPath = config.cache.path;
 
     configObject.should.be.ok;
     configObject.cache.should.be.ok;
     configObject.cache.enable.should.be.false;
-    configObject.cache.path.should.be.expectedPath;
+    configObject.cache.path.should.be.eql(config.cache.path);
   });
 
   it('should return a valid log object', function() {
